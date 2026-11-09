@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Web Build Artifacts
+dist/
+*.tsbuildinfo
+
+# Temporary Raw HTML
+downloaded_article.html
+
+# System & IDE
+.DS_Store
+.idea/
+.vscode/
+*.log

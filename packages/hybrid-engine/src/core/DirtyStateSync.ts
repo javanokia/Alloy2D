@@ -42,12 +42,13 @@ export class DirtyStateSync<TState extends Record<string, any>> {
     if (this.dirtyFlags.size === 0) return;
     this.flushCount++;
 
-    this.onFlush(this.dirtyFlags, this.state, {
+    const dirtyKeys = new Set(this.dirtyFlags);
+    this.dirtyFlags.clear();
+
+    this.onFlush(dirtyKeys, this.state, {
       flushCount: this.flushCount,
       mergedCount: this.mergedMutationsCount,
     });
-
-    this.dirtyFlags.clear();
   }
 
   public getStats(): DirtySyncStats {

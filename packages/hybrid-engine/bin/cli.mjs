@@ -364,17 +364,49 @@ function runExportWx() {
     'utf-8'
   );
 
-  const files = fs.readdirSync(outDir);
-  let totalBytes = 0;
+  // 若游戏工程存在 public/assets，同步至 dist-wx/assets (排除大型未压缩音视频以保证首包 < 4MB)
+  const publicAssetsDir = path.join(projectDir, 'public', 'assets');
+  const distAssetsDir = path.join(outDir, 'assets');
+  if (fs.existsSync(publicAssetsDir)) {
+    fs.mkdirSync(distAssetsDir, { recursive: true });
+    function copyDirRecursive(src, dest) {
+      for (const item of fs.readdirSync(src)) {
+        if (item === 'sound-disco.mp3' || item === 'bgm.mp3') continue;
+        const sPath = path.join(src, item);
+        const dPath = path.join(dest, item);
+        if (fs.statSync(sPath).isDirectory()) {
+          fs.mkdirSync(dPath, { recursive: true });
+          copyDirRecursive(sPath, dPath);
+        } else {
+          fs.copyFileSync(sPath, dPath);
+        }
+      }
+    }
+    copyDirRecursive(publicAssetsDir, distAssetsDir);
+  }
+
+  const wxDiscoMp3 = path.join(outDir, 'assets', 'audio', 'sound-disco.mp3');
+  if (fs.existsSync(wxDiscoMp3)) fs.unlinkSync(wxDiscoMp3);
+  const wxBgmMp3 = path.join(outDir, 'assets', 'audio', 'bgm.mp3');
+  if (fs.existsSync(wxBgmMp3)) fs.unlinkSync(wxBgmMp3);
+
+  function getDirSizeBytes(dirPath) {
+    let size = 0;
+    for (const item of fs.readdirSync(dirPath)) {
+      const full = path.join(dirPath, item);
+      const stat = fs.statSync(full);
+      size += stat.isDirectory() ? getDirSizeBytes(full) : stat.size;
+    }
+    return size;
+  }
+
+  const totalBytes = getDirSizeBytes(outDir);
   console.log('\n📊 [@wegame/hybrid-engine] [4/4] 微信小游戏导出清单 (dist-wx/):');
-  for (const file of files) {
+  for (const file of fs.readdirSync(outDir)) {
     const fullPath = path.join(outDir, file);
     const stat = fs.statSync(fullPath);
-    if (stat.isFile()) {
-      totalBytes += stat.size;
-      const kb = (stat.size / 1024).toFixed(2);
-      console.log(`  - ${file.padEnd(24)} ${kb.padStart(8)} KB`);
-    }
+    const kb = ((stat.isDirectory() ? getDirSizeBytes(fullPath) : stat.size) / 1024).toFixed(2);
+    console.log(`  - ${file.padEnd(24)} ${kb.padStart(8)} KB ${stat.isDirectory() ? '(目录)' : ''}`);
   }
   const totalMB = (totalBytes / (1024 * 1024)).toFixed(2);
   console.log(`\n✅ 微信小游戏首包总大小: ${totalMB} MB (< 4.00 MB 限制)`);

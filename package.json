@@ -1,29 +1,18 @@
 {
-  "name": "react-pixi-hybrid-game-engine",
+  "name": "wegame-hybrid-monorepo",
   "private": true,
   "version": "1.0.0",
-  "type": "module",
+  "description": "React + Pixi.js 多端混合游戏引擎 (@wegame/hybrid-engine) 与游戏工程 (games/*) 工作区",
+  "workspaces": [
+    "packages/*",
+    "games/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "build:web": "CROSS_PLATFORM=web vite build",
-    "build:wx": "node scripts/export-wx.mjs",
-    "build:desktop": "CROSS_PLATFORM=desktop vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "pixi.js": "^7.4.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "stats.js": "^0.17.0",
-    "zustand": "^5.0.0"
-  },
-  "devDependencies": {
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
-    "@types/stats.js": "^0.17.3",
-    "@vitejs/plugin-react": "^4.3.4",
-    "typescript": "~5.6.2",
-    "vite": "^6.0.1"
+    "dev": "npm --workspace=@wegame/star-match3 run dev",
+    "build:engine": "npm --workspace=@wegame/hybrid-engine run build",
+    "build:game": "npm --workspace=@wegame/star-match3 run build",
+    "build:wx": "npm --workspace=@wegame/star-match3 run build:wx",
+    "build": "npm run build:engine && npm run build:game && npm run build:wx",
+    "create-game": "node packages/hybrid-engine/bin/cli.mjs create"
   }
 }

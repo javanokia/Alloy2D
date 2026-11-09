@@ -1,9 +1,10 @@
 # Dependencies
 node_modules/
+**/node_modules/
 
-# Web Build Artifacts
-dist/
-*.tsbuildinfo
+# Build Outputs (keep dist-wx for WeChat Mini Game direct import)
+**/dist/
+**/*.tsbuildinfo
 
 # Temporary Raw HTML
 downloaded_article.html

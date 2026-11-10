@@ -105,8 +105,10 @@ export class CirclePhysicsWorld {
 
     // 3. 将物理坐标同步给 Pixi 精灵
     for (const b of this.bodies) {
-      b.sprite.x = b.x;
-      b.sprite.y = b.y;
+      if (b && b.sprite && !b.sprite.destroyed) {
+        b.sprite.x = b.x;
+        b.sprite.y = b.y;
+      }
     }
 
     // 4. 危险线判定 (只检测产生超过 1.5 秒且稳定的水果)
@@ -141,14 +143,17 @@ export class CirclePhysicsWorld {
   }
 
   private resolveBodyCollisions(): void {
-    const len = this.bodies.length;
+    const mergesToTrigger: Array<[CircleBody, CircleBody]> = [];
+    const bodies = this.bodies;
+    const len = bodies.length;
+
     for (let i = 0; i < len; i++) {
-      const b1 = this.bodies[i];
-      if (b1.isMerging) continue;
+      const b1 = bodies[i];
+      if (!b1 || b1.isMerging) continue;
 
       for (let j = i + 1; j < len; j++) {
-        const b2 = this.bodies[j];
-        if (b2.isMerging) continue;
+        const b2 = bodies[j];
+        if (!b2 || b2.isMerging) continue;
 
         const dx = b2.x - b1.x;
         const dy = b2.y - b1.y;
@@ -160,18 +165,18 @@ export class CirclePhysicsWorld {
           const nx = dx / dist;
           const ny = dy / dist;
 
-          // 同等级水果合成判定
+          // 同等级水果合成判定：先标记 merging，记录队列，循环结束后再派发
           if (b1.tier === b2.tier && b1.tier < 10) {
             b1.isMerging = true;
             b2.isMerging = true;
-            this.onMerge?.(b1, b2);
-            continue;
+            mergesToTrigger.push([b1, b2]);
+            break;
           }
 
           // 弹性冲量响应
           const kx = b1.vx - b2.vx;
           const ky = b1.vy - b2.vy;
-          const p = 2 * (nx * kx + ny * ky) / (b1.mass + b2.mass);
+          const p = (2 * (nx * kx + ny * ky)) / (b1.mass + b2.mass);
 
           b1.vx -= p * b2.mass * nx * (1 + this.restitution) * 0.5;
           b1.vy -= p * b2.mass * ny * (1 + this.restitution) * 0.5;
@@ -191,6 +196,11 @@ export class CirclePhysicsWorld {
         }
       }
     }
+
+    // 统一派发合成回调，彻底规避遍历中原地修改 bodies 导致的迭代器失效崩溃
+    for (const [b1, b2] of mergesToTrigger) {
+      this.onMerge?.(b1, b2);
+    }
   }
 
   private checkDangerLine(dtSeconds: number): void {
@@ -198,7 +208,7 @@ export class CirclePhysicsWorld {
     let hasOverhead = false;
 
     for (const b of this.bodies) {
-      if (b.isMerging) continue;
+      if (!b || b.isMerging) continue;
       // 水果掉落 1.2 秒后且垂直速度不大时，才参与超高判定
       if (now - b.spawnTime > 1200 && Math.abs(b.vy) < 1.5) {
         if (b.y - b.radius < this.boundary.dangerY) {

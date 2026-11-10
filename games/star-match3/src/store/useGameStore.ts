@@ -6,10 +6,27 @@ import {
   InspectorPoolTelemetry,
   LifecycleState,
   platform,
+  SaveManager,
 } from '@wegame/hybrid-engine';
 
 export type SceneName = 'loading' | 'menu' | 'game' | 'settlement';
 export type ModalType = 'shop' | 'leaderboard' | 'settings' | null;
+
+export interface Match3SaveData {
+  highScore: number;
+  coins: number;
+  soundEnabled: boolean;
+}
+
+export const match3SaveManager = new SaveManager<Match3SaveData>({
+  key: 'match3_save',
+  version: 1,
+  defaultData: () => ({
+    highScore: Number(platform.getStorage('highScore') || '0'),
+    coins: Number(platform.getStorage('coins') || '200'),
+    soundEnabled: platform.getStorage('soundEnabled') !== 'false',
+  }),
+});
 
 export interface LeaderboardEntry {
   rank: number;
@@ -79,9 +96,7 @@ export interface GameStoreState {
   appendEventLog: (event: string, payload?: unknown) => void;
 }
 
-const savedHighScore = Number(platform.getStorage('highScore') || '0');
-const savedCoins = Number(platform.getStorage('coins') || '200');
-const savedSound = platform.getStorage('soundEnabled') !== 'false';
+const initialSave = match3SaveManager.get();
 
 let logIdCounter = 1;
 
@@ -93,8 +108,8 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   movesLeft: 20,
   combo: 0,
   maxCombo: 0,
-  coins: savedCoins,
-  highScore: savedHighScore,
+  coins: initialSave.coins,
+  highScore: initialSave.highScore,
   isLevelWon: false,
 
   activeModal: null,
@@ -106,7 +121,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   },
   activeItemMode: null,
 
-  soundEnabled: savedSound,
+  soundEnabled: initialSave.soundEnabled,
   showInspector: true,
 
   lifecycleState: 'show',
@@ -135,7 +150,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     set((state) => {
       const nextHigh = Math.max(state.highScore, score);
       if (nextHigh > state.highScore) {
-        platform.setStorage('highScore', String(nextHigh));
+        match3SaveManager.save({ highScore: nextHigh });
       }
       return { score, highScore: nextHigh };
     }),
@@ -157,7 +172,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   addCoins: (amount) =>
     set((state) => {
       const nextCoins = Math.max(0, state.coins + amount);
-      platform.setStorage('coins', String(nextCoins));
+      match3SaveManager.save({ coins: nextCoins });
       return { coins: nextCoins };
     }),
 
@@ -165,7 +180,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     const state = get();
     if (state.coins < cost) return false;
     const nextCoins = state.coins - cost;
-    platform.setStorage('coins', String(nextCoins));
+    match3SaveManager.save({ coins: nextCoins });
     set({
       coins: nextCoins,
       items: {
@@ -194,7 +209,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
     set((state) => {
       const next = !state.soundEnabled;
       platform.setSoundEnabled(next);
-      platform.setStorage('soundEnabled', String(next));
+      match3SaveManager.save({ soundEnabled: next });
       return { soundEnabled: next };
     }),
 

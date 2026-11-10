@@ -85,18 +85,10 @@ export function App() {
         telemetryTick++;
         if (telemetryTick >= 25) {
           telemetryTick = 0;
-          const effectTelem = yangGameSystem.effects.getTelemetry();
           useYangStore.getState().updateTelemetry({
             fps: Math.round(pixiApp.ticker.FPS),
             drawCalls: 6,
-            poolStats: {
-              particleActive: effectTelem.particleStats.active,
-              particleAvailable: effectTelem.particleStats.available,
-              textActive: effectTelem.textStats.active,
-              textAvailable: effectTelem.textStats.available,
-              totalHits: effectTelem.particleStats.totalHits + effectTelem.textStats.totalHits,
-              totalCreated: effectTelem.particleStats.totalCreated + effectTelem.textStats.totalCreated,
-            },
+            poolStats: yangGameSystem.effects.getTelemetry(),
           });
         }
       },

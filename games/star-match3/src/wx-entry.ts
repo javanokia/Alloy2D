@@ -1,11 +1,5 @@
-import { Application, Container, Graphics, Sprite } from 'pixi.js';
-import {
-  gameEvents,
-  platform,
-  resizeStageToDesign,
-  SceneManager,
-  tweenManager,
-} from '@wegame/hybrid-engine';
+import { Container, Graphics, Sprite } from 'pixi.js';
+import { gameEvents, runWxGame, SceneManager } from '@wegame/hybrid-engine';
 import { assetManager } from './assets/Match3AssetManager';
 import { SceneName, stateSync, useGameStore } from './store/useGameStore';
 import { DESIGN_HEIGHT, DESIGN_WIDTH, Match3System } from './systems/Match3System';
@@ -65,94 +59,58 @@ function createWxAmbientBackground(): {
 }
 
 /**
- * 微信小游戏端启动入口：通过依赖引入 @wegame/hybrid-engine 引擎模块启动游戏
+ * 微信小游戏端启动入口：通用流程 (Application/适配/生命周期/上下文恢复/主循环) 由引擎 runWxGame 负责
  */
-async function bootstrapWeChatMiniGame() {
-  const { width: screenW, height: screenH, dpr } = platform.getScreenSize();
-  const mainCanvas = (globalThis as unknown as { canvas?: HTMLCanvasElement }).canvas;
+runWxGame({
+  designWidth: DESIGN_WIDTH,
+  designHeight: DESIGN_HEIGHT,
+  backgroundColor: 0x070b19,
+  loadAssets: () => assetManager.initBuiltInAtlas(),
+  reloadAssets: async () => {
+    assetManager.destroy();
+    await assetManager.initBuiltInAtlas();
+  },
+  setup: (app) => {
+    const ambient = createWxAmbientBackground();
+    app.stage.addChild(ambient.container);
 
-  const app = new Application({
-    view: mainCanvas,
-    width: screenW,
-    height: screenH,
-    backgroundColor: 0x070b19,
-    resolution: dpr,
-    autoDensity: true,
-    antialias: true,
-  });
-
-  await assetManager.initBuiltInAtlas();
-
-  const ambient = createWxAmbientBackground();
-  app.stage.addChild(ambient.container);
-
-  const sceneManager = new SceneManager<SceneName>(app, (nextScene) => {
-    stateSync.state.scene = nextScene;
-    stateSync.markDirty('scene');
-  });
-
-  const menuScene = new Container();
-  const gameScene = new Container();
-  const settlementScene = new Container();
-
-  const match3System = new Match3System();
-  gameScene.addChild(match3System.rootContainer);
-
-  const wxUI = new WxCanvasUISystem(menuScene, gameScene, settlementScene);
-
-  sceneManager.register('menu', menuScene);
-  sceneManager.register('game', gameScene);
-  sceneManager.register('settlement', settlementScene);
-
-  app.stage.addChild(wxUI.modalLayer);
-
-  sceneManager.switchTo('menu');
-  match3System.startLevel(useGameStore.getState().level);
-
-  gameEvents.on<{ scene: SceneName; level?: number }>('switch-scene', (payload) => {
-    sceneManager.switchTo(payload.scene);
-    if (payload.scene === 'game') {
-      match3System.startLevel(payload.level ?? stateSync.state.level);
-    }
-  });
-
-  resizeStageToDesign(app, DESIGN_WIDTH, DESIGN_HEIGHT);
-  wxUI.applySafeAreaLayout();
-
-  platform.onLifecycleChange((state) => {
-    useGameStore.getState().recordLifecycleChange(state);
-    gameEvents.emit('app-lifecycle', { state });
-    if (state === 'hide') {
-      app.ticker.stop();
-    } else {
-      wxUI.applySafeAreaLayout();
-      app.ticker.start();
-    }
-  });
-
-  const canvasEl = app.view as HTMLCanvasElement;
-  if (canvasEl && typeof canvasEl.addEventListener === 'function') {
-    canvasEl.addEventListener('webglcontextlost', (e: Event) => {
-      e.preventDefault();
-      app.ticker.stop();
-      useGameStore.getState().recordWebglContextLost();
-      gameEvents.emit('webgl-context', { status: 'lost' });
+    const sceneManager = new SceneManager<SceneName>(app, (nextScene) => {
+      stateSync.state.scene = nextScene;
+      stateSync.markDirty('scene');
     });
-    canvasEl.addEventListener('webglcontextrestored', async () => {
-      assetManager.destroy();
-      await assetManager.initBuiltInAtlas();
-      match3System.startLevel(stateSync.state.level);
-      app.ticker.start();
-      gameEvents.emit('webgl-context', { status: 'restored' });
+    const menuScene = new Container();
+    const gameScene = new Container();
+    const settlementScene = new Container();
+
+    const match3System = new Match3System();
+    gameScene.addChild(match3System.rootContainer);
+    const wxUI = new WxCanvasUISystem(menuScene, gameScene, settlementScene);
+
+    sceneManager.register('menu', menuScene);
+    sceneManager.register('game', gameScene);
+    sceneManager.register('settlement', settlementScene);
+    app.stage.addChild(wxUI.modalLayer);
+
+    sceneManager.switchTo('menu');
+    match3System.startLevel(useGameStore.getState().level);
+
+    gameEvents.on<{ scene: SceneName; level?: number }>('switch-scene', (payload) => {
+      sceneManager.switchTo(payload.scene);
+      if (payload.scene === 'game') {
+        match3System.startLevel(payload.level ?? stateSync.state.level);
+      }
     });
-  }
 
-  app.ticker.add((delta) => {
-    ambient.update(delta);
-    tweenManager.update(delta);
-    match3System.update(delta);
-    stateSync.flushDirty();
-  });
-}
-
-bootstrapWeChatMiniGame();
+    return {
+      onLayout: () => wxUI.applySafeAreaLayout(),
+      onLifecycle: (state) => useGameStore.getState().recordLifecycleChange(state),
+      onContextLost: () => useGameStore.getState().recordWebglContextLost(),
+      onContextRestored: () => match3System.startLevel(stateSync.state.level),
+      update: (delta) => {
+        ambient.update(delta);
+        match3System.update(delta);
+        stateSync.flushDirty();
+      },
+    };
+  },
+});

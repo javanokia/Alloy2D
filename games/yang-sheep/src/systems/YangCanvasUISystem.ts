@@ -1,5 +1,6 @@
 import { Container, FederatedPointerEvent, Graphics, Text, TextStyle } from 'pixi.js';
 import {
+  CanvasButton,
   computeSafeAreaDesignOffsets,
   gameEvents,
   platform,
@@ -614,34 +615,17 @@ export class YangCanvasUISystem {
     w: number,
     h: number,
     onClick: () => void
-  ): Container {
-    const c = new Container();
-    c.eventMode = 'static';
-    c.cursor = 'pointer';
-
-    const g = new Graphics();
-    g.beginFill(bgColor, 0.95);
-    g.lineStyle(2, borderColor, 0.85);
-    g.drawRoundedRect(-w / 2, -h / 2, w, h, 14);
-    g.endFill();
-    c.addChild(g);
-
-    const style = new TextStyle({
-      fontFamily: 'system-ui, sans-serif',
-      fontSize: 16,
-      fill: '#ffffff',
-      fontWeight: 'bold',
+  ): CanvasButton {
+    return new CanvasButton({
+      width: w,
+      height: h,
+      radius: 14,
+      backgroundColor: bgColor,
+      borderColor,
+      label: text,
+      textStyle: { fontSize: 16 },
+      onClick,
     });
-    const t = new Text(text, style);
-    t.anchor.set(0.5);
-    c.addChild(t);
-
-    c.on('pointerdown', (e: FederatedPointerEvent) => {
-      e.stopPropagation();
-      onClick();
-    });
-
-    return c;
   }
 
   public applySafeAreaLayout(): void {

@@ -1,8 +1,26 @@
 import { create } from 'zustand';
-import { DirtyStateSync, platform } from '@wegame/hybrid-engine';
+import { audioManager, DirtyStateSync, platform, SaveManager } from '@wegame/hybrid-engine';
 
 export type SceneName = 'menu' | 'game' | 'settlement';
 export type ModalType = 'shop' | 'leaderboard' | 'settings' | null;
+
+export interface YangSaveData {
+  highScore: number;
+  coins: number;
+  soundEnabled: boolean;
+  bgmEnabled: boolean;
+}
+
+export const yangSaveManager = new SaveManager<YangSaveData>({
+  key: 'yang_save',
+  version: 1,
+  defaultData: () => ({
+    highScore: Number(platform.getStorage('yang_highScore') || '0'),
+    coins: Number(platform.getStorage('yang_coins') || '200'),
+    soundEnabled: platform.getStorage('yang_soundEnabled') !== 'false',
+    bgmEnabled: platform.getStorage('yang_bgmEnabled') !== 'false',
+  }),
+});
 
 export interface YangSyncState extends Record<string, any> {
   scene: SceneName;
@@ -76,48 +94,20 @@ export interface YangStoreState {
   appendEventLog: (event: string, payload?: unknown) => void;
 }
 
-const savedHighScore = Number(platform.getStorage('yang_highScore') || '0');
-const savedCoins = Number(platform.getStorage('yang_coins') || '200');
-const savedSound = platform.getStorage('yang_soundEnabled') !== 'false';
-const savedBgm = platform.getStorage('yang_bgmEnabled') !== 'false';
+const initialSave = yangSaveManager.get();
 
-interface WxInnerAudioContext {
-  src: string;
-  loop: boolean;
-  play: () => void;
-  pause: () => void;
-  stop: () => void;
-  destroy: () => void;
-}
+const YANG_BGM_SRC = 'assets/audio/bgm-loop.mp3';
+audioManager.setBgmEnabled(initialSave.bgmEnabled);
+audioManager.setSfxEnabled(initialSave.soundEnabled);
 
-let wxBgmCtx: WxInnerAudioContext | null = null;
-let webBgmAudio: HTMLAudioElement | null = null;
-
+/** 播放背景音乐 (Web / 微信小游戏由引擎 audioManager 统一处理) */
 export function playYangBgm(): void {
-  const g = globalThis as unknown as { wx?: { createInnerAudioContext?: () => WxInnerAudioContext } };
-  if (typeof g.wx !== 'undefined' && typeof g.wx.createInnerAudioContext === 'function') {
-    if (!wxBgmCtx) {
-      wxBgmCtx = g.wx.createInnerAudioContext();
-      wxBgmCtx.src = 'assets/audio/bgm-loop.mp3';
-      wxBgmCtx.loop = true;
-    }
-    wxBgmCtx.play();
-  } else if (typeof window !== 'undefined' && typeof Audio !== 'undefined') {
-    if (!webBgmAudio) {
-      webBgmAudio = new Audio('/assets/audio/bgm-loop.mp3');
-      webBgmAudio.loop = true;
-    }
-    webBgmAudio.play().catch(() => {});
-  }
+  audioManager.setBgmEnabled(true);
+  audioManager.playBgm(YANG_BGM_SRC, { volume: 0.6, fadeInMs: 400 });
 }
 
 export function stopYangBgm(): void {
-  if (wxBgmCtx) {
-    wxBgmCtx.pause();
-  }
-  if (webBgmAudio) {
-    webBgmAudio.pause();
-  }
+  audioManager.setBgmEnabled(false);
 }
 
 let logIdCounter = 1;
@@ -126,8 +116,8 @@ export const useYangStore = create<YangStoreState>((set, get) => ({
   scene: 'menu',
   level: 1,
   score: 0,
-  highScore: savedHighScore,
-  coins: savedCoins,
+  highScore: initialSave.highScore,
+  coins: initialSave.coins,
   isLevelWon: false,
 
   province: '广东省',
@@ -143,8 +133,8 @@ export const useYangStore = create<YangStoreState>((set, get) => ({
 
   activeModal: null,
 
-  soundEnabled: savedSound,
-  bgmEnabled: savedBgm,
+  soundEnabled: initialSave.soundEnabled,
+  bgmEnabled: initialSave.bgmEnabled,
   showInspector: true,
 
   fps: 60,
@@ -169,7 +159,7 @@ export const useYangStore = create<YangStoreState>((set, get) => ({
     set((state) => {
       const nextHigh = Math.max(state.highScore, score);
       if (nextHigh > state.highScore) {
-        platform.setStorage('yang_highScore', String(nextHigh));
+        yangSaveManager.save({ highScore: nextHigh });
       }
       return { score, highScore: nextHigh };
     }),
@@ -178,7 +168,7 @@ export const useYangStore = create<YangStoreState>((set, get) => ({
   addCoins: (amount) =>
     set((state) => {
       const nextCoins = Math.max(0, state.coins + amount);
-      platform.setStorage('yang_coins', String(nextCoins));
+      yangSaveManager.save({ coins: nextCoins });
       return { coins: nextCoins };
     }),
 
@@ -209,7 +199,7 @@ export const useYangStore = create<YangStoreState>((set, get) => ({
   toggleBgm: () =>
     set((state) => {
       const next = !state.bgmEnabled;
-      platform.setStorage('yang_bgmEnabled', String(next));
+      yangSaveManager.save({ bgmEnabled: next });
       if (next) {
         playYangBgm();
       } else {
@@ -222,7 +212,7 @@ export const useYangStore = create<YangStoreState>((set, get) => ({
     set((state) => {
       const next = !state.soundEnabled;
       platform.setSoundEnabled(next);
-      platform.setStorage('yang_soundEnabled', String(next));
+      yangSaveManager.save({ soundEnabled: next });
       return { soundEnabled: next };
     }),
 

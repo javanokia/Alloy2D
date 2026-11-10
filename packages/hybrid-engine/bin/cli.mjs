@@ -295,7 +295,35 @@ function generateWeappAdapterCode() {
 `;
 }
 
+/**
+ * 游戏工程构建时引用引擎 dist 产物；若 dist 缺失或早于 src 中任一文件，则先重新构建引擎
+ */
+function ensureEngineBuilt() {
+  const engineDir = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+  const distEntry = path.join(engineDir, 'dist', 'index.js');
+  const srcDir = path.join(engineDir, 'src');
+  if (!fs.existsSync(srcDir)) return; // 以 npm 包形式安装时只有 dist
+
+  function latestMtime(dir) {
+    let latest = 0;
+    for (const item of fs.readdirSync(dir)) {
+      if (item === '__tests__') continue;
+      const full = path.join(dir, item);
+      const stat = fs.statSync(full);
+      latest = Math.max(latest, stat.isDirectory() ? latestMtime(full) : stat.mtimeMs);
+    }
+    return latest;
+  }
+
+  const stale = !fs.existsSync(distEntry) || fs.statSync(distEntry).mtimeMs < latestMtime(srcDir);
+  if (stale) {
+    console.log('🔧 [@wegame/hybrid-engine] [0/4] 引擎 dist 缺失或已过期，正在重新构建引擎...');
+    execSync('npm run build', { stdio: 'inherit', cwd: engineDir });
+  }
+}
+
 function runExportWx() {
+  ensureEngineBuilt();
   const projectDir = process.cwd();
   const outDir = path.join(projectDir, 'dist-wx');
   const pkgPath = path.join(projectDir, 'package.json');
@@ -469,6 +497,89 @@ function runCreateGame(gameName) {
   fs.writeFileSync(
     path.join(targetDir, 'index.html'),
     `<!doctype html>\n<html lang="zh-CN">\n  <head>\n    <meta charset="UTF-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>${gameName} - Powered by @wegame/hybrid-engine</title>\n  </head>\n  <body>\n    <div id="root"></div>\n    <script type="module" src="/src/main.tsx"></script>\n  </body>\n</html>\n`,
+    'utf-8'
+  );
+
+  fs.writeFileSync(
+    path.join(targetDir, 'vite.config.ts'),
+    `import { defaultClientConditions, defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig(({ command }) => ({
+  plugins: [react()],
+  resolve:
+    command === 'serve'
+      ? { conditions: ['@wegame/source', ...defaultClientConditions] }
+      : undefined,
+  define: {
+    __PLATFORM__: JSON.stringify(process.env.CROSS_PLATFORM || 'web'),
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          pixi: ['pixi.js'],
+          react: ['react', 'react-dom'],
+        },
+      },
+    },
+  },
+}));
+`,
+    'utf-8'
+  );
+
+  fs.writeFileSync(
+    path.join(targetDir, 'vite.wx.config.ts'),
+    `import { defineConfig } from 'vite';
+
+export default defineConfig({
+  define: {
+    __PLATFORM__: JSON.stringify('wx'),
+    'process.env.NODE_ENV': JSON.stringify('production'),
+  },
+  build: {
+    outDir: 'dist-wx',
+    emptyOutDir: true,
+    target: 'es2019',
+    lib: {
+      entry: 'src/wx-entry.ts',
+      name: 'HybridMiniGameEngine',
+      formats: ['iife'],
+      fileName: () => 'engine-bundle.js',
+    },
+    rollupOptions: {
+      output: {
+        inlineDynamicImports: true,
+      },
+    },
+  },
+});
+`,
+    'utf-8'
+  );
+
+  fs.writeFileSync(
+    path.join(targetDir, 'src', 'wx-entry.ts'),
+    `import { Container } from 'pixi.js';
+import { runWxGame, SceneManager } from '@wegame/hybrid-engine';
+
+runWxGame({
+  designWidth: 750,
+  designHeight: 1334,
+  backgroundColor: 0x0f172a,
+  setup: (app) => {
+    const sceneManager = new SceneManager(app);
+    const mainScene = new Container();
+    sceneManager.register('main', mainScene);
+    sceneManager.switchTo('main');
+
+    return {
+      update: () => {},
+    };
+  },
+});
+`,
     'utf-8'
   );
 

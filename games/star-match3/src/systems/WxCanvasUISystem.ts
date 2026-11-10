@@ -1,6 +1,7 @@
 import { Container, FederatedPointerEvent, Graphics, Text, TextStyle } from 'pixi.js';
 import {
   animateTransform,
+  CanvasButton,
   computeSafeAreaDesignOffsets,
   Easing,
   gameEvents,
@@ -111,44 +112,18 @@ export class WxCanvasUISystem {
     fontSize: number,
     onClick: () => void,
     radius = 20
-  ): { container: Container; bg: Graphics; textObj: Text } {
-    const container = new Container();
-    container.eventMode = 'static';
-    container.cursor = 'pointer';
-
-    const bg = new Graphics();
-    bg.beginFill(bgColor, 0.95);
-    bg.lineStyle(3, borderColor, 0.85);
-    bg.drawRoundedRect(-width / 2, -height / 2, width, height, radius);
-    bg.endFill();
-    container.addChild(bg);
-
-    const textObj = new Text(
+  ): { container: CanvasButton; bg: Graphics; textObj: Text } {
+    const btn = new CanvasButton({
+      width,
+      height,
+      radius,
+      backgroundColor: bgColor,
+      borderColor,
       label,
-      new TextStyle({
-        fontFamily: 'sans-serif',
-        fontSize,
-        fontWeight: 'bold',
-        fill: '#ffffff',
-      })
-    );
-    textObj.anchor.set(0.5);
-    container.addChild(textObj);
-
-    container.on('pointerdown', (e: FederatedPointerEvent) => {
-      e.stopPropagation();
-      container.scale.set(0.95);
+      textStyle: { fontSize },
+      onClick,
     });
-    container.on('pointerup', (e: FederatedPointerEvent) => {
-      e.stopPropagation();
-      container.scale.set(1);
-      onClick();
-    });
-    container.on('pointerupoutside', () => {
-      container.scale.set(1);
-    });
-
-    return { container, bg, textObj };
+    return { container: btn, bg: btn.background, textObj: btn.labelText };
   }
 
   private buildMenuScene(menuScene: Container): void {

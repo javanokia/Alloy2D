@@ -1,4 +1,5 @@
 import React from 'react';
+import { gameEvents, platform } from 'alloy2d';
 import { FRUIT_CONFIGS } from '../assets/SuikaAssetManager';
 import { useSuikaStore } from '../store/useSuikaStore';
 
@@ -35,6 +36,17 @@ export const GameHeader: React.FC = () => {
       </div>
 
       <div className="header-right">
+        <button
+          type="button"
+          className="header-btn restart-btn"
+          onClick={() => {
+            platform.playSound('click');
+            gameEvents.emit('suika-restart');
+          }}
+          title="重新开始"
+        >
+          🔄
+        </button>
         <button
           type="button"
           className="header-btn coin-btn"

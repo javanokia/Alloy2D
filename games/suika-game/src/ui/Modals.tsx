@@ -1,5 +1,5 @@
 import React from 'react';
-import { ModalDialog, platform } from 'alloy2d';
+import { gameEvents, ModalDialog, platform } from 'alloy2d';
 import { useSuikaStore } from '../store/useSuikaStore';
 
 export const Modals: React.FC = () => {
@@ -157,6 +157,21 @@ export const Modals: React.FC = () => {
           <div className="setting-row">
             <span>当前运行平台</span>
             <span className="platform-tag">{platform.platformName}</span>
+          </div>
+
+          <div className="setting-row restart-setting-row">
+            <span>重置本局游戏</span>
+            <button
+              type="button"
+              className="danger-action-btn"
+              onClick={() => {
+                platform.playSound('click');
+                gameEvents.emit('suika-restart');
+                handleClose();
+              }}
+            >
+              🔄 立即重新开始
+            </button>
           </div>
         </div>
       </ModalDialog>

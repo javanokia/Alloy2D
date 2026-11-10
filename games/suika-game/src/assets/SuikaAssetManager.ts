@@ -30,7 +30,19 @@ export class SuikaAssetManager extends BaseAssetManager {
   private isAtlasReady = false;
 
   public async initAtlas(): Promise<void> {
-    if (this.isAtlasReady) return;
+    const firstTex = this.get('fruit_0');
+    if (
+      this.isAtlasReady &&
+      firstTex &&
+      !firstTex.destroyed &&
+      firstTex.source &&
+      !firstTex.source.destroyed
+    ) {
+      return;
+    }
+
+    this.destroy();
+    this.isAtlasReady = false;
 
     // 绘制包含 11 种水果纹理与粒子、瞄准虚线端点的图集
     // 最大的西瓜直径为 312px，留出充足 padding 拼成 2048x1024 大图
@@ -186,6 +198,11 @@ export class SuikaAssetManager extends BaseAssetManager {
       throw new Error(`Fruit texture for tier ${tier} not found. Please call initAtlas() first.`);
     }
     return tex;
+  }
+
+  public override destroy(): void {
+    super.destroy();
+    this.isAtlasReady = false;
   }
 }
 

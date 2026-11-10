@@ -159,6 +159,33 @@ body {
   font-size: 14px;
 }
 
+.restart-btn {
+  color: #ea580c;
+  font-size: 14px;
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+
+.restart-btn:hover {
+  background: #ffedd5;
+}
+
+.danger-action-btn {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #f87171;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.danger-action-btn:hover {
+  background: #fecaca;
+}
+
 /* 道具工具栏 */
 .prop-toolbar {
   position: relative;

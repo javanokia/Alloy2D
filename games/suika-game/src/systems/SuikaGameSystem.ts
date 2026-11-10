@@ -209,6 +209,12 @@ export class SuikaGameSystem {
     this.isDropping = false;
     this.dropCooldown = 0;
     this.physicsWorld.clear();
+    // 彻底销毁箱内遗留的所有历史水果精灵
+    this.fruitContainer.removeChildren().forEach((child) => {
+      try {
+        child.destroy();
+      } catch {}
+    });
     useSuikaStore.getState().resetGame();
 
     this.currentTier = Math.floor(Math.random() * 3);

@@ -27,7 +27,7 @@ export function StartPanel({
       <div className="start-card">
         <div className="badge-row">
           <span className="arch-badge">alloy2d</span>
-          <span className="arch-badge pixi">Pixi.js v7 WebGL</span>
+          <span className="arch-badge pixi">Pixi.js v8 WebGL</span>
           <span className="arch-badge zustand">Zustand + DirtyFlags</span>
         </div>
 

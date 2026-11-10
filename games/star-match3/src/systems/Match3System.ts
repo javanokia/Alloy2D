@@ -47,23 +47,21 @@ export class Match3System {
   private createCachedBoardBackground(width: number, height: number): Graphics {
     const graphics = new Graphics();
 
-    graphics.beginFill(0x0f172a, 0.88);
-    graphics.lineStyle(4, 0x38bdf8, 0.45);
-    graphics.drawRoundedRect(-14, -14, width + 28, height + 28, 26);
-    graphics.endFill();
+    graphics.roundRect(-14, -14, width + 28, height + 28, 26);
+    graphics.fill({ color: 0x0f172a, alpha: 0.88 });
+    graphics.stroke({ width: 4, color: 0x38bdf8, alpha: 0.45 });
 
     for (let r = 0; r < BOARD_ROWS; r++) {
       for (let c = 0; c < BOARD_COLS; c++) {
         const isEven = (r + c) % 2 === 0;
-        graphics.beginFill(isEven ? 0x1e293b : 0x172033, 0.92);
-        graphics.drawRoundedRect(
+        graphics.roundRect(
           c * TILE_SIZE + 3,
           r * TILE_SIZE + 3,
           TILE_SIZE - 6,
           TILE_SIZE - 6,
           14
         );
-        graphics.endFill();
+        graphics.fill({ color: isEven ? 0x1e293b : 0x172033, alpha: 0.92 });
       }
     }
 

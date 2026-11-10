@@ -1,4 +1,4 @@
-import { BaseTexture, Texture } from 'pixi.js';
+import { Texture, TextureSource } from 'pixi.js';
 import {
   ATLAS_PADDING,
   BaseAssetManager,
@@ -67,7 +67,7 @@ export class Match3AssetManager extends BaseAssetManager {
       this.drawParticleStar(ctx, x, y, cellSize);
     }
 
-    const baseTex = BaseTexture.from(canvas);
+    const baseTex = TextureSource.from(canvas);
     this.atlasBaseTextures.push(baseTex);
 
     for (let i = 0; i < TILE_TYPES_COUNT; i++) {

@@ -12,10 +12,9 @@ function createWxAmbientBackground(): {
   const container = new Container();
 
   const bg = new Graphics();
-  bg.beginFill(0x0f172a, 0.96);
-  bg.lineStyle(2, 0x334155, 0.6);
-  bg.drawRoundedRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT, 32);
-  bg.endFill();
+  bg.roundRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT, 32);
+  bg.fill({ color: 0x0f172a, alpha: 0.96 });
+  bg.stroke({ width: 2, color: 0x334155, alpha: 0.6 });
   bg.cacheAsBitmap = true;
   container.addChild(bg);
 

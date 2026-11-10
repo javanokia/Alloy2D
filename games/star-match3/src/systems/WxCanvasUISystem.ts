@@ -133,10 +133,9 @@ export class WxCanvasUISystem {
     menuScene.addChild(card);
 
     const cardBg = new Graphics();
-    cardBg.beginFill(0x0f172a, 0.94);
-    cardBg.lineStyle(4, 0x38bdf8, 0.55);
-    cardBg.drawRoundedRect(-320, -370, 640, 740, 36);
-    cardBg.endFill();
+    cardBg.roundRect(-320, -370, 640, 740, 36);
+    cardBg.fill({ color: 0x0f172a, alpha: 0.94 });
+    cardBg.stroke({ width: 4, color: 0x38bdf8, alpha: 0.55 });
     card.addChild(cardBg);
 
     const badge = new Text(
@@ -158,7 +157,7 @@ export class WxCanvasUISystem {
         fontFamily: 'sans-serif',
         fontSize: 48,
         fontWeight: '900',
-        fill: ['#38bdf8', '#c084fc', '#f472b6'],
+        fill: '#38bdf8',
       })
     );
     title.anchor.set(0.5);
@@ -166,7 +165,7 @@ export class WxCanvasUISystem {
     card.addChild(title);
 
     const subtitle = new Text(
-      'React 状态驱动 + Pixi.js v7 高性能渲染管线',
+      'React 状态驱动 + Pixi.js v8 高性能渲染管线',
       new TextStyle({
         fontFamily: 'sans-serif',
         fontSize: 22,
@@ -181,10 +180,9 @@ export class WxCanvasUISystem {
     const statLabels = ['当前关卡', '历史最高分', '持有金币'];
     statPositions.forEach((posX, idx) => {
       const box = new Graphics();
-      box.beginFill(0x1e293b, 0.9);
-      box.lineStyle(2, 0x334155, 0.8);
-      box.drawRoundedRect(posX - 85, -90, 170, 120, 20);
-      box.endFill();
+      box.roundRect(posX - 85, -90, 170, 120, 20);
+      box.fill({ color: 0x1e293b, alpha: 0.9 });
+      box.stroke({ width: 2, color: 0x334155, alpha: 0.8 });
       card.addChild(box);
 
       const lbl = new Text(
@@ -270,10 +268,9 @@ export class WxCanvasUISystem {
     gameScene.addChild(topBar);
 
     const topBg = new Graphics();
-    topBg.beginFill(0x0f172a, 0.92);
-    topBg.lineStyle(3, 0x38bdf8, 0.45);
-    topBg.drawRoundedRect(-335, -115, 670, 230, 28);
-    topBg.endFill();
+    topBg.roundRect(-335, -115, 670, 230, 28);
+    topBg.fill({ color: 0x0f172a, alpha: 0.92 });
+    topBg.stroke({ width: 3, color: 0x38bdf8, alpha: 0.45 });
     topBar.addChild(topBg);
 
     const backBtn = this.createButton(125, 54, 0x1e293b, 0x475569, '⬅ 菜单', 21, () => {
@@ -321,10 +318,9 @@ export class WxCanvasUISystem {
     topBar.addChild(settingIconBtn.container);
 
     const movesBox = new Graphics();
-    movesBox.beginFill(0x1e293b, 0.95);
-    movesBox.lineStyle(2, 0x38bdf8, 0.45);
-    movesBox.drawRoundedRect(-310, -10, 150, 100, 18);
-    movesBox.endFill();
+    movesBox.roundRect(-310, -10, 150, 100, 18);
+    movesBox.fill({ color: 0x1e293b, alpha: 0.95 });
+    movesBox.stroke({ width: 2, color: 0x38bdf8, alpha: 0.45 });
     topBar.addChild(movesBox);
 
     const movesLabel = new Text(
@@ -355,10 +351,9 @@ export class WxCanvasUISystem {
     topBar.addChild(this.hudScoreText);
 
     const progressTrack = new Graphics();
-    progressTrack.beginFill(0x1e293b, 1);
-    progressTrack.lineStyle(2, 0x334155, 0.8);
-    progressTrack.drawRoundedRect(-130, 48, 435, 28, 14);
-    progressTrack.endFill();
+    progressTrack.roundRect(-130, 48, 435, 28, 14);
+    progressTrack.fill({ color: 0x1e293b, alpha: 1 });
+    progressTrack.stroke({ width: 2, color: 0x334155, alpha: 0.8 });
     topBar.addChild(progressTrack);
 
     this.hudProgressFill = new Graphics();
@@ -428,10 +423,9 @@ export class WxCanvasUISystem {
     settlementScene.addChild(card);
 
     const cardBg = new Graphics();
-    cardBg.beginFill(0x0f172a, 0.95);
-    cardBg.lineStyle(4, 0x38bdf8, 0.55);
-    cardBg.drawRoundedRect(-310, -320, 620, 640, 36);
-    cardBg.endFill();
+    cardBg.roundRect(-310, -320, 620, 640, 36);
+    cardBg.fill({ color: 0x0f172a, alpha: 0.95 });
+    cardBg.stroke({ width: 4, color: 0x38bdf8, alpha: 0.55 });
     card.addChild(cardBg);
 
     this.settleBadgeText = new Text(
@@ -498,9 +492,8 @@ export class WxCanvasUISystem {
 
   private buildModalLayer(): void {
     const backdrop = new Graphics();
-    backdrop.beginFill(0x030712, 0.78);
-    backdrop.drawRect(-500, -500, DESIGN_WIDTH + 1000, DESIGN_HEIGHT + 1000);
-    backdrop.endFill();
+    backdrop.rect(-500, -500, DESIGN_WIDTH + 1000, DESIGN_HEIGHT + 1000);
+    backdrop.fill({ color: 0x030712, alpha: 0.78 });
     backdrop.eventMode = 'static';
     backdrop.on('pointerdown', (e: FederatedPointerEvent) => {
       e.stopPropagation();
@@ -522,10 +515,9 @@ export class WxCanvasUISystem {
     this.modalLayer.addChild(card);
 
     const cardBg = new Graphics();
-    cardBg.beginFill(0x0f172a, 0.98);
-    cardBg.lineStyle(4, 0x38bdf8, 0.65);
-    cardBg.drawRoundedRect(-320, -370, 640, 740, 32);
-    cardBg.endFill();
+    cardBg.roundRect(-320, -370, 640, 740, 32);
+    cardBg.fill({ color: 0x0f172a, alpha: 0.98 });
+    cardBg.stroke({ width: 4, color: 0x38bdf8, alpha: 0.65 });
     card.addChild(cardBg);
 
     this.modalTitleText = new Text(
@@ -546,9 +538,9 @@ export class WxCanvasUISystem {
     card.addChild(closeBtn.container);
 
     const divider = new Graphics();
-    divider.lineStyle(2, 0x334155, 0.8);
     divider.moveTo(-280, -255);
     divider.lineTo(280, -255);
+    divider.stroke({ width: 2, color: 0x334155, alpha: 0.8 });
     card.addChild(divider);
 
     this.shopContent = new Container();
@@ -566,9 +558,8 @@ export class WxCanvasUISystem {
 
   private buildShopModalContent(container: Container): void {
     const coinBar = new Graphics();
-    coinBar.beginFill(0x1e293b, 0.9);
-    coinBar.drawRoundedRect(-280, -230, 560, 84, 18);
-    coinBar.endFill();
+    coinBar.roundRect(-280, -230, 560, 84, 18);
+    coinBar.fill({ color: 0x1e293b, alpha: 0.9 });
     container.addChild(coinBar);
 
     this.shopCoinsText = new Text(
@@ -617,10 +608,9 @@ export class WxCanvasUISystem {
 
     itemsMeta.forEach((meta) => {
       const rowBg = new Graphics();
-      rowBg.beginFill(0x1e293b, 0.78);
-      rowBg.lineStyle(2, 0x334155, 0.8);
-      rowBg.drawRoundedRect(-280, meta.y - 60, 560, 125, 20);
-      rowBg.endFill();
+      rowBg.roundRect(-280, meta.y - 60, 560, 125, 20);
+      rowBg.fill({ color: 0x1e293b, alpha: 0.78 });
+      rowBg.stroke({ width: 2, color: 0x334155, alpha: 0.8 });
       container.addChild(rowBg);
 
       const iconTxt = new Text(meta.icon, new TextStyle({ fontSize: 42 }));
@@ -732,10 +722,9 @@ export class WxCanvasUISystem {
   private buildSettingsModalContent(container: Container): void {
     const drawRowCard = (y: number, label: string) => {
       const bg = new Graphics();
-      bg.beginFill(0x1e293b, 0.85);
-      bg.lineStyle(2, 0x334155, 0.8);
-      bg.drawRoundedRect(-280, y - 48, 560, 96, 18);
-      bg.endFill();
+      bg.roundRect(-280, y - 48, 560, 96, 18);
+      bg.fill({ color: 0x1e293b, alpha: 0.85 });
+      bg.stroke({ width: 2, color: 0x334155, alpha: 0.8 });
       container.addChild(bg);
 
       const lbl = new Text(
@@ -815,19 +804,17 @@ export class WxCanvasUISystem {
     const pct = Math.min(1, Math.max(0, s.score / Math.max(1, s.targetScore)));
     this.hudProgressFill.clear();
     if (pct > 0) {
-      this.hudProgressFill.beginFill(0x34d399, 1);
-      this.hudProgressFill.drawRoundedRect(-128, 50, Math.max(24, 431 * pct), 24, 12);
-      this.hudProgressFill.endFill();
+      this.hudProgressFill.roundRect(-128, 50, Math.max(24, 431 * pct), 24, 12);
+      this.hudProgressFill.fill({ color: 0x34d399, alpha: 1 });
     }
 
     this.hammerTipText.text =
       s.activeItemMode === 'hammer' ? '🔨 点击任意棋子爆破 3×3 区域 (再次点击取消)' : '';
 
     this.hammerBtnBg.clear();
-    this.hammerBtnBg.beginFill(s.activeItemMode === 'hammer' ? 0xd97706 : 0x1e293b, 0.95);
-    this.hammerBtnBg.lineStyle(3, s.activeItemMode === 'hammer' ? 0xfbbf24 : 0x38bdf8, 0.9);
-    this.hammerBtnBg.drawRoundedRect(-205 / 2, -92 / 2, 205, 92, 20);
-    this.hammerBtnBg.endFill();
+    this.hammerBtnBg.roundRect(-205 / 2, -92 / 2, 205, 92, 20);
+    this.hammerBtnBg.fill({ color: s.activeItemMode === 'hammer' ? 0xd97706 : 0x1e293b, alpha: 0.95 });
+    this.hammerBtnBg.stroke({ width: 3, color: s.activeItemMode === 'hammer' ? 0xfbbf24 : 0x38bdf8, alpha: 0.9 });
 
     this.hammerCountText.text = `🔨 神锤 (${s.items.hammer})`;
     this.shuffleCountText.text = `🔀 重排 (${s.items.shuffle})`;
@@ -873,10 +860,9 @@ export class WxCanvasUISystem {
 
       const updateBuyBtnStyle = (bg: Graphics, canAfford: boolean) => {
         bg.clear();
-        bg.beginFill(canAfford ? 0x0284c7 : 0x334155, 0.95);
-        bg.lineStyle(3, canAfford ? 0x38bdf8 : 0x475569, 0.85);
-        bg.drawRoundedRect(-145 / 2, -64 / 2, 145, 64, 16);
-        bg.endFill();
+        bg.roundRect(-145 / 2, -64 / 2, 145, 64, 16);
+        bg.fill({ color: canAfford ? 0x0284c7 : 0x334155, alpha: 0.95 });
+        bg.stroke({ width: 3, color: canAfford ? 0x38bdf8 : 0x475569, alpha: 0.85 });
       };
       updateBuyBtnStyle(this.shopHammerBuyBg, s.coins >= 50);
       updateBuyBtnStyle(this.shopShuffleBuyBg, s.coins >= 40);
@@ -898,10 +884,9 @@ export class WxCanvasUISystem {
         const isMe = entry.name.includes('你');
         const bg = this.lbRowBgs[idx];
         bg.clear();
-        bg.beginFill(isMe ? 0x0c4a6e : 0x1e293b, 0.88);
-        bg.lineStyle(2, isMe ? 0x38bdf8 : 0x334155, 0.9);
-        bg.drawRoundedRect(-280, y - 42, 560, 84, 18);
-        bg.endFill();
+        bg.roundRect(-280, y - 42, 560, 84, 18);
+        bg.fill({ color: isMe ? 0x0c4a6e : 0x1e293b, alpha: 0.88 });
+        bg.stroke({ width: 2, color: isMe ? 0x38bdf8 : 0x334155, alpha: 0.9 });
 
         this.lbRankTexts[idx].text = `#${entry.rank}`;
         this.lbNameTexts[idx].text = entry.name;
@@ -912,10 +897,9 @@ export class WxCanvasUISystem {
       this.modalTitleText.text = '⚙️ 游戏与引擎设置';
       this.settingSoundBtnText.text = s.soundEnabled ? '🔊 已开启' : '🔇 已静音';
       this.settingSoundBtnBg.clear();
-      this.settingSoundBtnBg.beginFill(s.soundEnabled ? 0x059669 : 0x334155, 0.95);
-      this.settingSoundBtnBg.lineStyle(3, s.soundEnabled ? 0x34d399 : 0x64748b, 0.85);
-      this.settingSoundBtnBg.drawRoundedRect(-175 / 2, -58 / 2, 175, 58, 14);
-      this.settingSoundBtnBg.endFill();
+      this.settingSoundBtnBg.roundRect(-175 / 2, -58 / 2, 175, 58, 14);
+      this.settingSoundBtnBg.fill({ color: s.soundEnabled ? 0x059669 : 0x334155, alpha: 0.95 });
+      this.settingSoundBtnBg.stroke({ width: 3, color: s.soundEnabled ? 0x34d399 : 0x64748b, alpha: 0.85 });
 
       const insets = platform.getSafeAreaInsets();
       this.settingSafeAreaText.text = `Top ${insets.top}px · 胶囊 ${insets.capsuleBottom}px`;

@@ -4,7 +4,7 @@
  * WebGL 上下文丢失/恢复、主循环 (tweenManager + 业务 update)
  * 业务工程只需提供 loadAssets 与 setup 两个钩子。
  */
-import { Application } from 'pixi.js';
+import { Application, Ticker } from 'pixi.js';
 import { gameEvents } from '../core/EventBus';
 import { resizeStageToDesign } from '../core/screenResize';
 import { tweenManager } from '../utils/tween';
@@ -40,7 +40,7 @@ export interface WxBootstrapOptions {
   /** 可选注入平台适配器 (默认自动根据当前运行环境选用) */
   platformAdapter?: PlatformAdapter;
   /** 可选注入 Application 工厂 (主要用于单元测试与特殊渲染器注入) */
-  createApp?(options: Record<string, unknown>): Application;
+  createApp?(options: Record<string, unknown>): Application | Promise<Application>;
 }
 
 export interface WxGameRuntime {
@@ -55,25 +55,24 @@ export async function bootstrapWxGame(options: WxBootstrapOptions): Promise<WxGa
   const view =
     options.view ?? (globalThis as unknown as { canvas?: HTMLCanvasElement }).canvas;
 
-  const app = options.createApp
-    ? options.createApp({
-        view,
-        width,
-        height,
-        backgroundColor: options.backgroundColor ?? 0x000000,
-        resolution: dpr,
-        autoDensity: true,
-        antialias: options.antialias ?? true,
-      })
-    : new Application({
-        view,
-        width,
-        height,
-        backgroundColor: options.backgroundColor ?? 0x000000,
-        resolution: dpr,
-        autoDensity: true,
-        antialias: options.antialias ?? true,
-      });
+  const initOptions = {
+    canvas: view,
+    width,
+    height,
+    backgroundColor: options.backgroundColor ?? 0x000000,
+    resolution: dpr,
+    autoDensity: true,
+    antialias: options.antialias ?? true,
+    preference: 'webgl' as const,
+  };
+
+  let app: Application;
+  if (options.createApp) {
+    app = await options.createApp(initOptions);
+  } else {
+    app = new Application();
+    await app.init(initOptions);
+  }
 
   await options.loadAssets?.();
   const hooks = await options.setup(app);
@@ -96,7 +95,7 @@ export async function bootstrapWxGame(options: WxBootstrapOptions): Promise<WxGa
     })
   );
 
-  const canvasEl = app.view as HTMLCanvasElement;
+  const canvasEl = (app.canvas ?? (app as unknown as { view?: HTMLCanvasElement }).view) as HTMLCanvasElement;
   if (canvasEl && typeof canvasEl.addEventListener === 'function') {
     const onLost = (e: Event) => {
       e.preventDefault();
@@ -121,14 +120,16 @@ export async function bootstrapWxGame(options: WxBootstrapOptions): Promise<WxGa
 
   const interval = Math.max(1, options.telemetry?.intervalFrames ?? 30);
   let frame = 0;
-  const tick = (delta: number) => {
+  const tick = (tickerOrDelta: Ticker | number) => {
+    const delta = typeof tickerOrDelta === 'number' ? tickerOrDelta : (tickerOrDelta?.deltaTime ?? 1);
     tweenManager.update(delta);
     hooks.update?.(delta);
     if (options.telemetry) {
       frame++;
       if (frame >= interval) {
         frame = 0;
-        options.telemetry.report({ fps: Math.round(app.ticker.FPS) });
+        const fps = Math.round(app.ticker?.FPS ?? 60);
+        options.telemetry.report({ fps });
       }
     }
   };

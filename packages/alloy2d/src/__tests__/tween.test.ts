@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { DisplayObject } from 'pixi.js';
+import { Container } from 'pixi.js';
 import {
   animateTo,
   animateTransform,
@@ -7,7 +7,7 @@ import {
   tweenManager,
 } from '../utils/tween';
 
-function createMockDisplayObject(x = 0, y = 0): DisplayObject {
+function createMockDisplayObject(x = 0, y = 0): Container {
   const scale = {
     x: 1,
     y: 1,
@@ -22,7 +22,7 @@ function createMockDisplayObject(x = 0, y = 0): DisplayObject {
     alpha: 1,
     scale,
     destroyed: false,
-  } as unknown as DisplayObject;
+  } as unknown as Container;
 }
 
 describe('TweenManager & Easing (基于 Ticker 的补间动画系统)', () => {

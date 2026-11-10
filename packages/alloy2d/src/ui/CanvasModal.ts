@@ -2,7 +2,7 @@
  * 引擎通用 Canvas 模态弹窗容器组件 (v1.1 新增)
  * 提供全屏半透明遮罩、居中卡片容器、标题栏、关闭按钮及入场弹性回弹缓动动画
  */
-import { Container, FederatedPointerEvent, Graphics, ITextStyle, Text, TextStyle } from 'pixi.js';
+import { Container, FederatedPointerEvent, Graphics, Text, TextStyle, type TextStyleOptions } from 'pixi.js';
 import { animateTransform, Easing } from '../utils/tween';
 import { CanvasButton } from './CanvasButton';
 import { CanvasPanel } from './CanvasPanel';
@@ -13,7 +13,7 @@ export interface CanvasModalOptions {
   cardWidth?: number;
   cardHeight?: number;
   title?: string;
-  titleTextStyle?: Partial<ITextStyle>;
+  titleTextStyle?: TextStyleOptions;
   backdropAlpha?: number;
   backdropColor?: number;
   closeOnBackdropClick?: boolean;
@@ -41,9 +41,9 @@ export class CanvasModal extends Container {
 
     // 1. 全屏半透明遮罩
     this.backdrop = new Graphics();
-    this.backdrop.beginFill(options.backdropColor ?? 0x030712, options.backdropAlpha ?? 0.75);
-    this.backdrop.drawRect(-500, -500, dw + 1000, dh + 1000);
-    this.backdrop.endFill();
+    this.backdrop
+      .rect(-500, -500, dw + 1000, dh + 1000)
+      .fill({ color: options.backdropColor ?? 0x030712, alpha: options.backdropAlpha ?? 0.75 });
     this.backdrop.eventMode = 'static';
 
     this.backdrop.on('pointerdown', (e: FederatedPointerEvent) => {
@@ -75,16 +75,16 @@ export class CanvasModal extends Container {
     this.addChild(this.card);
 
     // 3. 标题文本
-    const defaultTitleStyle: Partial<ITextStyle> = {
+    const defaultTitleStyle: TextStyleOptions = {
       fontFamily: 'system-ui, -apple-system, sans-serif',
       fontSize: 30,
       fontWeight: 'bold',
       fill: '#ffffff',
     };
-    this.titleText = new Text(
-      options.title ?? '',
-      new TextStyle({ ...defaultTitleStyle, ...options.titleTextStyle })
-    );
+    this.titleText = new Text({
+      text: options.title ?? '',
+      style: new TextStyle({ ...defaultTitleStyle, ...options.titleTextStyle }),
+    });
     this.titleText.anchor.set(0.5);
     this.titleText.y = -cardH / 2 + 50;
     this.card.addChild(this.titleText);

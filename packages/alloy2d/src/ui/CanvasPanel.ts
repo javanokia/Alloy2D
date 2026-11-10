@@ -1,6 +1,6 @@
 /**
  * 引擎通用 Canvas 面板/卡片容器组件 (v1.1 新增)
- * 基于 Pixi.js v7 Container 实现，支持居中原点或左上角原点、圆角、背景色、描边及阴影风格
+ * 基于 Pixi.js v8 Container 实现，支持居中原点或左上角原点、圆角、背景色、描边及阴影风格
  */
 import { Container, Graphics } from 'pixi.js';
 
@@ -53,16 +53,19 @@ export class CanvasPanel extends Container {
     const bg = this.background;
     bg.clear();
 
-    bg.beginFill(this._bgColor, this._bgAlpha);
-    if (this._borderWidth > 0) {
-      bg.lineStyle(this._borderWidth, this._borderColor, this._borderAlpha);
-    }
-
     const startX = this._centered ? -this._panelWidth / 2 : 0;
     const startY = this._centered ? -this._panelHeight / 2 : 0;
 
-    bg.drawRoundedRect(startX, startY, this._panelWidth, this._panelHeight, this._radius);
-    bg.endFill();
+    bg.roundRect(startX, startY, this._panelWidth, this._panelHeight, this._radius);
+    bg.fill({ color: this._bgColor, alpha: this._bgAlpha });
+
+    if (this._borderWidth > 0) {
+      bg.stroke({
+        width: this._borderWidth,
+        color: this._borderColor,
+        alpha: this._borderAlpha,
+      });
+    }
   }
 
   public resize(width: number, height: number): this {

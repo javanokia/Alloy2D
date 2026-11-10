@@ -1,4 +1,4 @@
-import { DisplayObject } from 'pixi.js';
+import { Container } from 'pixi.js';
 
 export type EaseFn = (t: number) => number;
 
@@ -63,10 +63,10 @@ export class TweenManager {
 export const tweenManager = new TweenManager();
 
 /**
- * 平滑移动 DisplayObject 到目标坐标 (对应文章 4.1 节 Tile.moveTo)
+ * 平滑移动 Container 到目标坐标 (对应文章 4.1 节 Tile.moveTo)
  */
 export function animateTo(
-  target: DisplayObject,
+  target: Container,
   toX: number,
   toY: number,
   durationMS = 180,
@@ -91,7 +91,7 @@ export function animateTo(
  * 缩放与透明度插值动画（用于消除、弹窗弹性弹出等反馈）
  */
 export function animateTransform(
-  target: DisplayObject,
+  target: Container,
   options: {
     toScaleX?: number;
     toScaleY?: number;

@@ -1,9 +1,9 @@
 /**
  * 引擎通用 Canvas 交互按钮组件 (v1.1 新增)
- * 基于 Pixi.js v7 Container 实现，支持圆角背景、边框、文本排版、
+ * 基于 Pixi.js v8 Container 实现，支持圆角背景、边框、文本排版、
  * 按压回弹缓动动画 (pointerdown / pointerup / pointerupoutside)、音效联动及禁用态
  */
-import { Container, FederatedPointerEvent, Graphics, ITextStyle, Text, TextStyle } from 'pixi.js';
+import { Container, FederatedPointerEvent, Graphics, Text, TextStyle, type TextStyleOptions } from 'pixi.js';
 import { audioManager } from '../audio/AudioManager';
 
 export interface CanvasButtonOptions {
@@ -16,7 +16,7 @@ export interface CanvasButtonOptions {
   borderWidth?: number;
   borderAlpha?: number;
   label?: string;
-  textStyle?: Partial<ITextStyle>;
+  textStyle?: TextStyleOptions;
   /** 点击触发的音效名，默认 'click'；传 null 则不发声 */
   sound?: string | null;
   /** 按压状态缩放比例，默认 0.95 */
@@ -61,13 +61,16 @@ export class CanvasButton extends Container {
     this.background = new Graphics();
     this.addChild(this.background);
 
-    const defaultTextStyle: Partial<ITextStyle> = {
+    const defaultTextStyle: TextStyleOptions = {
       fontFamily: 'system-ui, -apple-system, sans-serif',
       fontSize: 22,
       fontWeight: 'bold',
       fill: '#ffffff',
     };
-    this.labelText = new Text(options.label ?? '', new TextStyle({ ...defaultTextStyle, ...options.textStyle }));
+    this.labelText = new Text({
+      text: options.label ?? '',
+      style: new TextStyle({ ...defaultTextStyle, ...options.textStyle }),
+    });
     this.labelText.anchor.set(0.5);
     this.addChild(this.labelText);
 
@@ -83,20 +86,23 @@ export class CanvasButton extends Container {
     bg.clear();
 
     const alpha = this._disabled ? this._bgAlpha * 0.5 : this._bgAlpha;
-    bg.beginFill(this._bgColor, alpha);
 
-    if (this._borderWidth > 0) {
-      bg.lineStyle(this._borderWidth, this._borderColor, this._disabled ? this._borderAlpha * 0.5 : this._borderAlpha);
-    }
-
-    bg.drawRoundedRect(
+    bg.roundRect(
       -this._btnWidth / 2,
       -this._btnHeight / 2,
       this._btnWidth,
       this._btnHeight,
       this._radius
     );
-    bg.endFill();
+    bg.fill({ color: this._bgColor, alpha });
+
+    if (this._borderWidth > 0) {
+      bg.stroke({
+        width: this._borderWidth,
+        color: this._borderColor,
+        alpha: this._disabled ? this._borderAlpha * 0.5 : this._borderAlpha,
+      });
+    }
 
     this.labelText.alpha = this._disabled ? 0.5 : 1;
   }

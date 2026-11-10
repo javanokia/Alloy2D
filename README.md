@@ -38,7 +38,7 @@ flowchart TD
         EventBus["EventBus 全局事件管道"]
     end
 
-    subgraph Render_Layer["Pixi.js v7 渲染管线 (双端通用)"]
+    subgraph Render_Layer["Pixi.js v8 现代渲染管线 (双端通用)"]
         SceneMgr["SceneManager 场景管理器"]
         Board["游戏主棋盘 / 实体渲染 Container"]
         EffectMgr["EffectManager (对象池复用 粒子+飘字)"]

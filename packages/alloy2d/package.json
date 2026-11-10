@@ -32,7 +32,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "pixi.js": "^7.4.2",
+    "pixi.js": "^8.22.0",
     "stats.js": "^0.17.0",
     "zustand": "^5.0.0"
   },

@@ -1,4 +1,4 @@
-import { BaseTexture, Rectangle, Texture } from 'pixi.js';
+import { Rectangle, Texture, TextureSource } from 'pixi.js';
 import { BaseAssetManager, platform } from 'alloy2d';
 
 export const TILE_TYPES_COUNT = 16;
@@ -55,7 +55,7 @@ function traceRoundedRect(
  * 继承自 alloy2d 的 BaseAssetManager
  */
 export class YangAssetManager extends BaseAssetManager {
-  private atlasBaseTexture: BaseTexture | null = null;
+  private atlasBaseTexture: TextureSource | null = null;
   private isAtlasReady = false;
 
   async initAtlas(): Promise<void> {
@@ -67,7 +67,7 @@ export class YangAssetManager extends BaseAssetManager {
 
     try {
       const img = await platform.loadImage(atlasUrl);
-      this.atlasBaseTexture = BaseTexture.from(img);
+      this.atlasBaseTexture = TextureSource.from(img);
 
       const cols = 4;
       const tileW = 110;
@@ -80,10 +80,10 @@ export class YangAssetManager extends BaseAssetManager {
         const row = Math.floor(i / cols);
         const x = col * stepX + 4;
         const y = row * stepY + 4;
-        const tex = new Texture(
-          this.atlasBaseTexture,
-          new Rectangle(x, y, tileW, tileH)
-        );
+        const tex = new Texture({
+          source: this.atlasBaseTexture,
+          frame: new Rectangle(x, y, tileW, tileH),
+        });
         this.cache.set(`tile_${i}`, tex);
       }
       loadedFromImage = true;
@@ -126,13 +126,16 @@ export class YangAssetManager extends BaseAssetManager {
       this.drawProceduralCard(ctx, x, y, tileW, tileH, TILE_THEMES[i]);
     }
 
-    this.atlasBaseTexture = BaseTexture.from(canvas);
+    this.atlasBaseTexture = TextureSource.from(canvas);
     for (let i = 0; i < TILE_TYPES_COUNT; i++) {
       const col = i % cols;
       const row = Math.floor(i / cols);
       const x = col * (tileW + pad * 2) + pad;
       const y = row * (tileH + pad * 2) + pad;
-      const tex = new Texture(this.atlasBaseTexture, new Rectangle(x, y, tileW, tileH));
+      const tex = new Texture({
+        source: this.atlasBaseTexture,
+        frame: new Rectangle(x, y, tileW, tileH),
+      });
       this.cache.set(`tile_${i}`, tex);
     }
   }
@@ -209,9 +212,9 @@ export class YangAssetManager extends BaseAssetManager {
     ctx.fill();
     ctx.restore();
 
-    const auxBase = BaseTexture.from(canvas);
-    this.cache.set('tile_select', new Texture(auxBase, new Rectangle(0, 0, 128, 128)));
-    this.cache.set('particle_star', new Texture(auxBase, new Rectangle(128, 0, 128, 128)));
+    const auxBase = TextureSource.from(canvas);
+    this.cache.set('tile_select', new Texture({ source: auxBase, frame: new Rectangle(0, 0, 128, 128) }));
+    this.cache.set('particle_star', new Texture({ source: auxBase, frame: new Rectangle(128, 0, 128, 128) }));
   }
 
   getTileTexture(type: number): Texture {

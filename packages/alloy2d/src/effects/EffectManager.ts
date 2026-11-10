@@ -2,7 +2,7 @@
  * 引擎通用特效管理器 (v1.1 从各游戏工程下沉)
  * 粒子爆裂 + 浮动文字，基于 Pool<T> 对象池复用，避免高频 GC 卡顿
  */
-import { Container, ITextStyle, Sprite, Text, TextStyle, Texture } from 'pixi.js';
+import { Container, Sprite, Text, TextStyle, type TextStyleOptions, Texture } from 'pixi.js';
 import { Pool } from '../utils/Pool';
 
 export interface BurstOptions {
@@ -32,7 +32,7 @@ export interface FloatingTextOptions {
 export interface EffectManagerOptions {
   /** 粒子纹理获取函数 (延迟到首次创建粒子时调用，便于图集重建后取到新纹理) */
   particleTexture: () => Texture | null | undefined;
-  textStyle?: Partial<ITextStyle>;
+  textStyle?: TextStyleOptions;
   particlePoolSize?: number;
   textPoolSize?: number;
   burst?: Partial<BurstOptions>;
@@ -86,17 +86,17 @@ export const DEFAULT_FLOATING_TEXT_OPTIONS: FloatingTextOptions = {
   animation: 'pop',
 };
 
-export const DEFAULT_FLOATING_TEXT_STYLE: Partial<ITextStyle> = {
+export const DEFAULT_FLOATING_TEXT_STYLE: TextStyleOptions = {
   fontFamily: 'system-ui, -apple-system, sans-serif',
   fontSize: 28,
   fontWeight: '900',
-  fill: ['#ffffff', '#fde047'],
-  stroke: '#0f172a',
-  strokeThickness: 5,
-  dropShadow: true,
-  dropShadowColor: '#000000',
-  dropShadowBlur: 4,
-  dropShadowDistance: 2,
+  fill: '#fde047',
+  stroke: { color: '#0f172a', width: 5 },
+  dropShadow: {
+    color: '#000000',
+    blur: 4,
+    distance: 2,
+  },
 };
 
 export class EffectManager {
@@ -138,7 +138,7 @@ export class EffectManager {
 
     this.textPool = new Pool<FloatingTextItem>(
       () => {
-        const textObj = new Text('', textStyle);
+        const textObj = new Text({ text: '', style: textStyle });
         textObj.anchor.set(0.5);
         textObj.visible = false;
         this.textContainer.addChild(textObj);

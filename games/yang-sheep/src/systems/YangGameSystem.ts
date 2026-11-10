@@ -76,37 +76,33 @@ export class YangGameSystem {
   private createMeadowBackground(): void {
     const bg = new Graphics();
 
-    bg.beginFill(0x84cc16, 0.98);
-    bg.drawRoundedRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT, 0);
-    bg.endFill();
+    bg.rect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
+    bg.fill({ color: 0x84cc16, alpha: 0.98 });
 
-    bg.beginFill(0x65a30d, 0.45);
-    bg.drawRoundedRect(0, 800, DESIGN_WIDTH, 534, 0);
-    bg.endFill();
+    bg.rect(0, 800, DESIGN_WIDTH, 534);
+    bg.fill({ color: 0x65a30d, alpha: 0.45 });
 
-    bg.lineStyle(6, 0x78350f, 0.65);
     const fenceY = 240;
     bg.moveTo(20, fenceY);
     bg.lineTo(DESIGN_WIDTH - 20, fenceY);
     bg.moveTo(20, fenceY + 36);
     bg.lineTo(DESIGN_WIDTH - 20, fenceY + 36);
+    bg.stroke({ width: 6, color: 0x78350f, alpha: 0.65 });
 
     for (let x = 40; x < DESIGN_WIDTH - 20; x += 60) {
-      bg.lineStyle(8, 0x92400e, 0.7);
       bg.moveTo(x, fenceY - 18);
       bg.lineTo(x, fenceY + 54);
+      bg.stroke({ width: 8, color: 0x92400e, alpha: 0.7 });
     }
 
-    bg.lineStyle(0);
-    bg.beginFill(0xffffff, 0.35);
-    bg.drawCircle(120, 150, 40);
-    bg.drawCircle(160, 140, 50);
-    bg.drawCircle(200, 150, 36);
+    bg.circle(120, 150, 40);
+    bg.circle(160, 140, 50);
+    bg.circle(200, 150, 36);
 
-    bg.drawCircle(540, 120, 35);
-    bg.drawCircle(580, 110, 45);
-    bg.drawCircle(620, 120, 32);
-    bg.endFill();
+    bg.circle(540, 120, 35);
+    bg.circle(580, 110, 45);
+    bg.circle(620, 120, 32);
+    bg.fill({ color: 0xffffff, alpha: 0.35 });
 
     bg.cacheAsBitmap = true;
     this.bgContainer.addChild(bg);
@@ -116,39 +112,36 @@ export class YangGameSystem {
     const totalSlotW = MAX_SLOTS * CARD_WIDTH + (MAX_SLOTS - 1) * this.slotSpacing;
     const tray = new Graphics();
 
-    tray.beginFill(0x451a03, 0.85);
-    tray.drawRoundedRect(
+    tray.roundRect(
       this.slotStartX - CARD_WIDTH / 2 - 14,
       this.slotY - CARD_HEIGHT / 2 - 10 + 6,
       totalSlotW + 28,
       CARD_HEIGHT + 20,
       18
     );
-    tray.endFill();
+    tray.fill({ color: 0x451a03, alpha: 0.85 });
 
-    tray.beginFill(0x78350f, 0.95);
-    tray.lineStyle(4, 0xb45309, 0.9);
-    tray.drawRoundedRect(
+    tray.roundRect(
       this.slotStartX - CARD_WIDTH / 2 - 14,
       this.slotY - CARD_HEIGHT / 2 - 10,
       totalSlotW + 28,
       CARD_HEIGHT + 20,
       18
     );
-    tray.endFill();
+    tray.fill({ color: 0x78350f, alpha: 0.95 });
+    tray.stroke({ width: 4, color: 0xb45309, alpha: 0.9 });
 
     for (let i = 0; i < MAX_SLOTS; i++) {
       const sx = this.slotStartX + i * (CARD_WIDTH + this.slotSpacing);
-      tray.lineStyle(2, 0x451a03, 0.6);
-      tray.beginFill(0x291404, 0.4);
-      tray.drawRoundedRect(
+      tray.roundRect(
         sx - CARD_WIDTH / 2,
         this.slotY - CARD_HEIGHT / 2,
         CARD_WIDTH,
         CARD_HEIGHT,
         10
       );
-      tray.endFill();
+      tray.fill({ color: 0x291404, alpha: 0.4 });
+      tray.stroke({ width: 2, color: 0x451a03, alpha: 0.6 });
     }
 
     tray.cacheAsBitmap = true;
@@ -159,29 +152,27 @@ export class YangGameSystem {
     const totalHeldW = 3 * CARD_WIDTH + 2 * this.slotSpacing;
     const tray = new Graphics();
 
-    tray.beginFill(0x3f6212, 0.55);
-    tray.lineStyle(2, 0xa3e635, 0.5);
-    tray.drawRoundedRect(
+    tray.roundRect(
       this.heldStartX - CARD_WIDTH / 2 - 8,
       this.heldY - CARD_HEIGHT / 2 - 6,
       totalHeldW + 16,
       CARD_HEIGHT + 12,
       14
     );
-    tray.endFill();
+    tray.fill({ color: 0x3f6212, alpha: 0.55 });
+    tray.stroke({ width: 2, color: 0xa3e635, alpha: 0.5 });
 
     for (let i = 0; i < 3; i++) {
       const hx = this.heldStartX + i * (CARD_WIDTH + this.slotSpacing);
-      tray.lineStyle(1.5, 0x4d7c0f, 0.7);
-      tray.beginFill(0x1a2e05, 0.35);
-      tray.drawRoundedRect(
+      tray.roundRect(
         hx - CARD_WIDTH / 2,
         this.heldY - CARD_HEIGHT / 2,
         CARD_WIDTH,
         CARD_HEIGHT,
         8
       );
-      tray.endFill();
+      tray.fill({ color: 0x1a2e05, alpha: 0.35 });
+      tray.stroke({ width: 1.5, color: 0x4d7c0f, alpha: 0.7 });
     }
 
     const tipStyle = new TextStyle({
@@ -189,9 +180,10 @@ export class YangGameSystem {
       fontSize: 16,
       fill: '#f7fee7',
       fontWeight: 'bold',
-      dropShadow: true,
-      dropShadowColor: '#000000',
-      dropShadowBlur: 2,
+      dropShadow: {
+        color: '#000000',
+        blur: 2,
+      },
     });
     const tipText = new Text('移出暂存区', tipStyle);
     tipText.anchor.set(0.5);

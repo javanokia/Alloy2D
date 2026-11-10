@@ -62,20 +62,20 @@ export class YangCanvasUISystem {
     card.y = DESIGN_HEIGHT / 2;
 
     const bg = new Graphics();
-    bg.beginFill(0x0f172a, 0.9);
-    bg.lineStyle(3, 0xa3e635, 0.6);
-    bg.drawRoundedRect(-240, -320, 480, 640, 24);
-    bg.endFill();
+    bg.roundRect(-240, -320, 480, 640, 24);
+    bg.fill({ color: 0x0f172a, alpha: 0.9 });
+    bg.stroke({ width: 3, color: 0xa3e635, alpha: 0.6 });
     card.addChild(bg);
 
     const titleStyle = new TextStyle({
       fontFamily: 'system-ui, sans-serif',
       fontSize: 48,
       fontWeight: '900',
-      fill: ['#a3e635', '#facc15'],
-      dropShadow: true,
-      dropShadowColor: '#000000',
-      dropShadowBlur: 4,
+      fill: '#a3e635',
+      dropShadow: {
+        color: '#000000',
+        blur: 4,
+      },
     });
     const title = new Text('🐑 羊了个羊', titleStyle);
     title.anchor.set(0.5);
@@ -95,10 +95,9 @@ export class YangCanvasUISystem {
 
     // 战报
     const banner = new Graphics();
-    banner.beginFill(0x1e293b, 0.85);
-    banner.lineStyle(1.5, 0x84cc16, 0.5);
-    banner.drawRoundedRect(-210, -120, 420, 70, 12);
-    banner.endFill();
+    banner.roundRect(-210, -120, 420, 70, 12);
+    banner.fill({ color: 0x1e293b, alpha: 0.85 });
+    banner.stroke({ width: 1.5, color: 0x84cc16, alpha: 0.5 });
     card.addChild(banner);
 
     const bannerStyle = new TextStyle({
@@ -183,10 +182,9 @@ export class YangCanvasUISystem {
 
     // 顶部条背景
     const topBg = new Graphics();
-    topBg.beginFill(0x0f172a, 0.9);
-    topBg.lineStyle(2, 0x84cc16, 0.4);
-    topBg.drawRoundedRect(16, 0, DESIGN_WIDTH - 32, 88, 16);
-    topBg.endFill();
+    topBg.roundRect(16, 0, DESIGN_WIDTH - 32, 88, 16);
+    topBg.fill({ color: 0x0f172a, alpha: 0.9 });
+    topBg.stroke({ width: 2, color: 0x84cc16, alpha: 0.4 });
     this.topHudContainer.addChild(topBg);
 
     // 退出按钮
@@ -255,10 +253,9 @@ export class YangCanvasUISystem {
       btn.cursor = 'pointer';
 
       const circle = new Graphics();
-      circle.beginFill(0x1e293b, 0.95);
-      circle.lineStyle(3, 0xa3e635, 0.8);
-      circle.drawCircle(0, 0, 36);
-      circle.endFill();
+      circle.circle(0, 0, 36);
+      circle.fill({ color: 0x1e293b, alpha: 0.95 });
+      circle.stroke({ width: 3, color: 0xa3e635, alpha: 0.8 });
       btn.addChild(circle);
 
       const iconStyle = new TextStyle({ fontSize: 24 });
@@ -279,9 +276,8 @@ export class YangCanvasUISystem {
       btn.addChild(name);
 
       const badge = new Graphics();
-      badge.beginFill(0xef4444);
-      badge.drawCircle(24, -24, 12);
-      badge.endFill();
+      badge.circle(24, -24, 12);
+      badge.fill({ color: 0xef4444 });
       btn.addChild(badge);
 
       const countStyle = new TextStyle({
@@ -322,10 +318,9 @@ export class YangCanvasUISystem {
     card.y = DESIGN_HEIGHT / 2;
 
     const bg = new Graphics();
-    bg.beginFill(0x0f172a, 0.94);
-    bg.lineStyle(3, 0x38bdf8, 0.6);
-    bg.drawRoundedRect(-240, -280, 480, 560, 24);
-    bg.endFill();
+    bg.roundRect(-240, -280, 480, 560, 24);
+    bg.fill({ color: 0x0f172a, alpha: 0.94 });
+    bg.stroke({ width: 3, color: 0x38bdf8, alpha: 0.6 });
     card.addChild(bg);
 
     const badgeStyle = new TextStyle({
@@ -419,9 +414,8 @@ export class YangCanvasUISystem {
 
   private buildModalSystem(): void {
     const backdrop = new Graphics();
-    backdrop.beginFill(0x000000, 0.65);
-    backdrop.drawRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
-    backdrop.endFill();
+    backdrop.rect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
+    backdrop.fill({ color: 0x000000, alpha: 0.65 });
     backdrop.eventMode = 'static';
     backdrop.on('pointerdown', (e: FederatedPointerEvent) => {
       e.stopPropagation();
@@ -434,10 +428,9 @@ export class YangCanvasUISystem {
     this.modalCard.y = DESIGN_HEIGHT / 2;
 
     const bg = new Graphics();
-    bg.beginFill(0x0f172a, 0.96);
-    bg.lineStyle(2, 0xa3e635, 0.5);
-    bg.drawRoundedRect(-250, -280, 500, 560, 24);
-    bg.endFill();
+    bg.roundRect(-250, -280, 500, 560, 24);
+    bg.fill({ color: 0x0f172a, alpha: 0.96 });
+    bg.stroke({ width: 2, color: 0xa3e635, alpha: 0.5 });
     this.modalCard.addChild(bg);
 
     const titleStyle = new TextStyle({

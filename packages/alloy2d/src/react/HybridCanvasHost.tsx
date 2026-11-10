@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Application } from 'pixi.js';
+import { Application, Ticker } from 'pixi.js';
 import Stats from 'stats.js';
 import { gameEvents } from '../core/EventBus';
 import { resizeStageToDesign } from '../core/screenResize';
@@ -50,103 +50,139 @@ export function HybridCanvasHost({
   useEffect(() => {
     if (!containerRef.current) return;
     let isDisposed = false;
+    let stats: Stats | null = null;
+    let unsubLifecycle: (() => void) | null = null;
+    let handleResize: (() => void) | null = null;
+    let handleContextLost: ((e: Event) => void) | null = null;
+    let handleContextRestored: (() => void) | null = null;
+    let gameLoop: ((tickerOrDelta: Ticker | number) => void) | null = null;
+    let gameInstance: HybridGameInstance | null = null;
+    let canvasEl: HTMLCanvasElement | null = null;
 
-    const app = new Application({
-      width: designWidth,
-      height: designHeight,
-      backgroundColor,
-      resolution: window.devicePixelRatio || 1,
-      autoDensity: true,
-      antialias: true,
-    });
+    const app = new Application();
 
-    const canvasEl = app.view as HTMLCanvasElement;
-    containerRef.current.appendChild(canvasEl);
-    appRef.current = app;
+    (async () => {
+      try {
+        await app.init({
+          width: designWidth,
+          height: designHeight,
+          backgroundColor,
+          resolution: window.devicePixelRatio || 1,
+          autoDensity: true,
+          antialias: true,
+          preference: 'webgl',
+        });
+      } catch (err) {
+        console.error('[alloy2d] Application init error:', err);
+        return;
+      }
 
-    // Stats.js 性能监控面板 (对应文章 6.1 节)
-    const stats = new Stats();
-    stats.showPanel(0);
-    stats.dom.style.position = 'fixed';
-    stats.dom.style.left = '12px';
-    stats.dom.style.bottom = '12px';
-    stats.dom.style.top = 'auto';
-    stats.dom.style.zIndex = '50';
-    stats.dom.style.borderRadius = '8px';
-    stats.dom.style.overflow = 'hidden';
-    document.body.appendChild(stats.dom);
+      if (isDisposed) {
+        try {
+          app.destroy(true, { children: true, texture: true });
+        } catch {}
+        return;
+      }
 
-    // 挂载游戏业务实例
-    const gameInstance = onBootstrap(app);
+      canvasEl = (app.canvas ?? (app as unknown as { view?: HTMLCanvasElement }).view) as HTMLCanvasElement;
+      if (containerRef.current && canvasEl) {
+        containerRef.current.appendChild(canvasEl);
+      }
+      appRef.current = app;
 
-    // 绑定前后台生命周期切换
-    const unsubLifecycle = platform.onLifecycleChange((state) => {
-      if (isDisposed) return;
-      onLifecycleChange?.(state);
-      gameEvents.emit('app-lifecycle', { state });
-      if (state === 'hide') {
+      // Stats.js 性能监控面板
+      stats = new Stats();
+      stats.showPanel(0);
+      stats.dom.style.position = 'fixed';
+      stats.dom.style.left = '12px';
+      stats.dom.style.bottom = '12px';
+      stats.dom.style.top = 'auto';
+      stats.dom.style.zIndex = '50';
+      stats.dom.style.borderRadius = '8px';
+      stats.dom.style.overflow = 'hidden';
+      document.body.appendChild(stats.dom);
+
+      // 挂载游戏业务实例
+      gameInstance = onBootstrap(app);
+
+      // 绑定前后台生命周期切换
+      unsubLifecycle = platform.onLifecycleChange((state) => {
+        if (isDisposed) return;
+        onLifecycleChange?.(state);
+        gameEvents.emit('app-lifecycle', { state });
+        if (state === 'hide') {
+          app.ticker.stop();
+        } else {
+          app.ticker.start();
+        }
+      });
+
+      // 绑定 WebGL 上下文丢失与自动恢复
+      handleContextLost = (e: Event) => {
+        e.preventDefault();
+        if (isDisposed) return;
         app.ticker.stop();
-      } else {
+        onWebglContextLost?.();
+        gameEvents.emit('webgl-context', { status: 'lost' });
+      };
+
+      handleContextRestored = async () => {
+        if (isDisposed) return;
+        await gameInstance?.onContextRestored?.(app);
         app.ticker.start();
+        gameEvents.emit('webgl-context', { status: 'restored' });
+      };
+
+      if (canvasEl) {
+        canvasEl.addEventListener('webglcontextlost', handleContextLost);
+        canvasEl.addEventListener('webglcontextrestored', handleContextRestored);
       }
-    });
 
-    // 绑定 WebGL 上下文丢失与自动恢复
-    const handleContextLost = (e: Event) => {
-      e.preventDefault();
-      if (isDisposed) return;
-      app.ticker.stop();
-      onWebglContextLost?.();
-      gameEvents.emit('webgl-context', { status: 'lost' });
-    };
+      // 屏幕自适应缩放
+      handleResize = () => {
+        if (!isDisposed && appRef.current) {
+          resizeStageToDesign(appRef.current, designWidth, designHeight);
+        }
+      };
+      handleResize();
+      window.addEventListener('resize', handleResize);
 
-    const handleContextRestored = async () => {
-      if (isDisposed) return;
-      await gameInstance.onContextRestored?.(app);
-      app.ticker.start();
-      gameEvents.emit('webgl-context', { status: 'restored' });
-    };
+      // 主循环 Ticker
+      gameLoop = (tickerOrDelta: Ticker | number) => {
+        const delta = typeof tickerOrDelta === 'number' ? tickerOrDelta : (tickerOrDelta?.deltaTime ?? 1);
+        stats?.begin();
+        tweenManager.update(delta);
+        gameInstance?.onTick(delta, app);
+        if (isInspectorVisible && stats) {
+          stats.dom.style.display = isInspectorVisible() ? 'block' : 'none';
+        }
+        stats?.end();
+      };
 
-    canvasEl.addEventListener('webglcontextlost', handleContextLost);
-    canvasEl.addEventListener('webglcontextrestored', handleContextRestored);
-
-    // 屏幕自适应缩放
-    const handleResize = () => {
-      if (!isDisposed && appRef.current) {
-        resizeStageToDesign(appRef.current, designWidth, designHeight);
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
-    // 主循环 Ticker
-    const gameLoop = (delta: number) => {
-      stats.begin();
-      tweenManager.update(delta);
-      gameInstance.onTick(delta, app);
-      if (isInspectorVisible) {
-        stats.dom.style.display = isInspectorVisible() ? 'block' : 'none';
-      }
-      stats.end();
-    };
-
-    app.ticker.add(gameLoop);
+      app.ticker.add(gameLoop);
+    })();
 
     return () => {
       isDisposed = true;
-      window.removeEventListener('resize', handleResize);
-      canvasEl.removeEventListener('webglcontextlost', handleContextLost);
-      canvasEl.removeEventListener('webglcontextrestored', handleContextRestored);
-      unsubLifecycle();
+      if (handleResize) window.removeEventListener('resize', handleResize);
+      if (canvasEl) {
+        if (handleContextLost) canvasEl.removeEventListener('webglcontextlost', handleContextLost);
+        if (handleContextRestored) canvasEl.removeEventListener('webglcontextrestored', handleContextRestored);
+      }
+      if (unsubLifecycle) unsubLifecycle();
       tweenManager.clear();
-      app.ticker.remove(gameLoop);
+      if (gameLoop) app.ticker.remove(gameLoop);
 
-      if (stats.dom && stats.dom.parentNode) {
+      if (stats?.dom && stats.dom.parentNode) {
         stats.dom.parentNode.removeChild(stats.dom);
       }
 
-      gameInstance.onDestroy();
-      app.destroy(true, { children: true, texture: true, baseTexture: true });
+      if (gameInstance) {
+        gameInstance.onDestroy();
+      }
+      try {
+        app.destroy(true, { children: true, texture: true });
+      } catch {}
       appRef.current = null;
     };
   }, []);

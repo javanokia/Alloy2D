@@ -1,4 +1,4 @@
-import { BaseTexture, Rectangle, Texture } from 'pixi.js';
+import { Rectangle, Texture, TextureSource } from 'pixi.js';
 import { platform } from '../platform/PlatformAdapter';
 
 /**
@@ -32,7 +32,7 @@ export function traceRoundedRect(
 
 export class BaseAssetManager {
   protected cache: Map<string, Texture> = new Map();
-  protected atlasBaseTextures: BaseTexture[] = [];
+  protected atlasBaseTextures: TextureSource[] = [];
 
   /**
    * 创建跨平台离屏 2D Canvas（兼容微信小游戏 wx.createCanvas 与 Web）
@@ -49,17 +49,20 @@ export class BaseAssetManager {
   }
 
   /**
-   * 从共享 BaseTexture 切分出带 Padding 的子纹理并写入缓存
+   * 从共享 TextureSource 切分出带 Padding 的子纹理并写入缓存
    */
   public registerSubTexture(
-    baseTexture: BaseTexture,
+    baseTexture: TextureSource,
     key: string,
     x: number,
     y: number,
     width: number,
     height: number
   ): Texture {
-    const tex = new Texture(baseTexture, new Rectangle(x, y, width, height));
+    const tex = new Texture({
+      source: baseTexture,
+      frame: new Rectangle(x, y, width, height),
+    });
     this.cache.set(key, tex);
     return tex;
   }

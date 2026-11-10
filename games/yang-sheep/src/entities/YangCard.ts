@@ -36,15 +36,14 @@ export class YangCard {
 
     // 1. 底部柔和立体投影
     this.shadowGraphics = new Graphics();
-    this.shadowGraphics.beginFill(0x000000, 0.28);
-    this.shadowGraphics.drawRoundedRect(
+    this.shadowGraphics.roundRect(
       -CARD_WIDTH / 2 + 2,
       -CARD_HEIGHT / 2 + 4,
       CARD_WIDTH - 4,
       CARD_HEIGHT - 4,
       14
     );
-    this.shadowGraphics.endFill();
+    this.shadowGraphics.fill({ color: 0x000000, alpha: 0.28 });
     this.container.addChild(this.shadowGraphics);
 
     // 2. 卡牌主体精灵
@@ -56,9 +55,8 @@ export class YangCard {
 
     // 3. 被遮挡时的半透明暗色蒙版
     this.maskOverlay = new Graphics();
-    this.maskOverlay.beginFill(0x000000, 0.52);
-    this.maskOverlay.drawRoundedRect(-CARD_WIDTH / 2, -CARD_HEIGHT / 2, CARD_WIDTH, CARD_HEIGHT, 14);
-    this.maskOverlay.endFill();
+    this.maskOverlay.roundRect(-CARD_WIDTH / 2, -CARD_HEIGHT / 2, CARD_WIDTH, CARD_HEIGHT, 14);
+    this.maskOverlay.fill({ color: 0x000000, alpha: 0.52 });
     this.maskOverlay.visible = false;
     this.container.addChild(this.maskOverlay);
 

@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { settings, Texture } from 'pixi.js';
+import { DOMAdapter, Texture } from 'pixi.js';
 import { EffectManager } from '../effects/EffectManager';
 
 describe('EffectManager (通用粒子与浮动文字特效)', () => {
@@ -21,7 +21,12 @@ describe('EffectManager (通用粒子与浮动文字特效)', () => {
       }
     }
     (globalThis as unknown as { HTMLCanvasElement: unknown }).HTMLCanvasElement = FakeCanvas;
-    settings.ADAPTER.createCanvas = (w = 1, h = 1) => new FakeCanvas() as unknown as HTMLCanvasElement;
+    try {
+      DOMAdapter.set({
+        ...DOMAdapter.get(),
+        createCanvas: () => new FakeCanvas() as unknown as HTMLCanvasElement,
+      });
+    } catch {}
   });
 
   it('初始化创建容器与对象池，并正确报告初始遥测指标', () => {

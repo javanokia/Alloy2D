@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest';
-import { settings } from 'pixi.js';
+import { DOMAdapter } from 'pixi.js';
 import { CanvasButton, CanvasModal, CanvasPanel } from '../ui';
 
 describe('Canvas UI Kit (微信小游戏端 Canvas 组件库)', () => {
@@ -21,7 +21,12 @@ describe('Canvas UI Kit (微信小游戏端 Canvas 组件库)', () => {
       }
     }
     (globalThis as unknown as { HTMLCanvasElement: unknown }).HTMLCanvasElement = FakeCanvas;
-    settings.ADAPTER.createCanvas = () => new FakeCanvas() as unknown as HTMLCanvasElement;
+    try {
+      DOMAdapter.set({
+        ...DOMAdapter.get(),
+        createCanvas: () => new FakeCanvas() as unknown as HTMLCanvasElement,
+      });
+    } catch {}
   });
 
   describe('CanvasButton (交互按钮)', () => {

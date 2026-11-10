@@ -1,4 +1,4 @@
-import { Container, FederatedPointerEvent, Graphics, Sprite } from 'pixi.js';
+import { Container, FederatedPointerEvent, Graphics, Rectangle, Sprite } from 'pixi.js';
 import {
   animateTransform,
   Easing,
@@ -16,9 +16,9 @@ export const DESIGN_HEIGHT = 1334;
 // 游戏箱体边界定义
 export const JAR_LEFT = 60;
 export const JAR_RIGHT = 690;
-export const JAR_BOTTOM = 1180;
-export const JAR_DANGER_Y = 360;
-export const DROP_Y = 220;
+export const JAR_BOTTOM = 1120;
+export const JAR_DANGER_Y = 340;
+export const DROP_Y = 200;
 
 function safeVibrate(type: 'light' | 'medium' | 'heavy' = 'light'): void {
   const g = globalThis as unknown as { wx?: { vibrateShort?: (opt: { type: string }) => void } };
@@ -117,7 +117,6 @@ export class SuikaGameSystem {
     bg.rect(0, JAR_BOTTOM, DESIGN_WIDTH, DESIGN_HEIGHT - JAR_BOTTOM);
     bg.fill({ color: 0x78350f, alpha: 0.95 });
 
-    bg.cacheAsBitmap = true;
     this.bgContainer.addChild(bg);
   }
 
@@ -139,7 +138,6 @@ export class SuikaGameSystem {
     jar.fill({ color: 0x9a3412, alpha: 0.95 });
     jar.stroke({ width: 3, color: 0xc2410c, alpha: 0.8 });
 
-    jar.cacheAsBitmap = true;
     this.jarContainer.addChild(jar);
   }
 
@@ -160,11 +158,10 @@ export class SuikaGameSystem {
 
   private bindInteractions(): void {
     this.rootContainer.eventMode = 'static';
-    this.rootContainer.hitArea = {
-      contains: (x: number, y: number) => x >= 0 && x <= DESIGN_WIDTH && y >= 0 && y <= DESIGN_HEIGHT,
-    };
+    this.rootContainer.cursor = 'crosshair';
+    this.rootContainer.hitArea = new Rectangle(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
 
-    let isTouching = false;
+    let isPointerPressed = false;
 
     this.rootContainer.on('pointerdown', (e: FederatedPointerEvent) => {
       const { isGameOver, activeItemMode } = useSuikaStore.getState();
@@ -177,20 +174,22 @@ export class SuikaGameSystem {
         return;
       }
 
-      isTouching = true;
+      isPointerPressed = true;
       this.updateDropperPosition(pos.x);
     });
 
     this.rootContainer.on('pointermove', (e: FederatedPointerEvent) => {
-      if (!isTouching || this.isDropping) return;
+      if (this.isDropping) return;
       const pos = e.getLocalPosition(this.rootContainer);
       this.updateDropperPosition(pos.x);
     });
 
-    const releaseDrop = () => {
-      if (!isTouching) return;
-      isTouching = false;
+    const releaseDrop = (e: FederatedPointerEvent) => {
+      if (!isPointerPressed) return;
+      isPointerPressed = false;
       if (!this.isDropping) {
+        const pos = e.getLocalPosition(this.rootContainer);
+        this.updateDropperPosition(pos.x);
         this.dropCurrentFruit();
       }
     };
@@ -207,6 +206,8 @@ export class SuikaGameSystem {
   }
 
   public initGame(): void {
+    this.isDropping = false;
+    this.dropCooldown = 0;
     this.physicsWorld.clear();
     useSuikaStore.getState().resetGame();
 

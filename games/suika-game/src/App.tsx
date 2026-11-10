@@ -21,6 +21,9 @@ export const App: React.FC = () => {
   const systemRef = useRef<SuikaGameSystem | null>(null);
 
   const handleBootstrap = useCallback((app: Application): HybridGameInstance => {
+    app.stage.eventMode = 'static';
+    app.stage.hitArea = app.screen;
+
     const system = new SuikaGameSystem();
     systemRef.current = system;
     app.stage.addChild(system.rootContainer);
@@ -49,43 +52,42 @@ export const App: React.FC = () => {
 
   return (
     <div className="suika-app-container">
-      <div className="suika-canvas-host">
-        <HybridCanvasHost
-          designWidth={DESIGN_WIDTH}
-          designHeight={DESIGN_HEIGHT}
-          backgroundColor={0xffedd5}
-          onBootstrap={handleBootstrap}
-          isInspectorVisible={() => useSuikaStore.getState().showInspector}
-        />
+      <HybridCanvasHost
+        className="suika-canvas-host"
+        designWidth={DESIGN_WIDTH}
+        designHeight={DESIGN_HEIGHT}
+        backgroundColor={0x18181b}
+        onBootstrap={handleBootstrap}
+        isInspectorVisible={() => useSuikaStore.getState().showInspector}
+      />
 
-        <div className="suika-ui-overlay">
-          <GameHeader />
-          <PropToolBar />
-        </div>
-
-        <GameOverDialog />
-        <Modals />
-
-        <EngineInspectorDock
-          showInspector={showInspector}
-          onToggleInspector={toggleInspector}
-          fps={60}
-          drawCalls={14}
-          dirtyFlushCount={0}
-          dirtyMergedCount={0}
-          poolStats={{
-            particleActive: 0,
-            particleAvailable: 60,
-            textActive: 0,
-            textAvailable: 20,
-            totalHits: 0,
-            totalCreated: 80,
-          }}
-          lifecycleState="show"
-          lifecycleSwitchCount={0}
-          eventLogs={[]}
-        />
+      <div className="suika-ui-overlay">
+        <GameHeader />
+        <PropToolBar />
       </div>
+
+      <GameOverDialog />
+      <Modals />
+
+      <EngineInspectorDock
+        showInspector={showInspector}
+        onToggleInspector={toggleInspector}
+        fps={60}
+        drawCalls={14}
+        dirtyFlushCount={0}
+        dirtyMergedCount={0}
+        poolStats={{
+          particleActive: 0,
+          particleAvailable: 60,
+          textActive: 0,
+          textAvailable: 20,
+          totalHits: 0,
+          totalCreated: 80,
+        }}
+        lifecycleState="show"
+        lifecycleSwitchCount={0}
+        eventLogs={[]}
+      />
     </div>
   );
 };

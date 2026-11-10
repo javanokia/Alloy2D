@@ -8,7 +8,7 @@ import {
   ModalDialog,
   platform,
   SceneManager,
-} from '@wegame/hybrid-engine';
+} from 'alloy2d';
 import { assetManager } from './assets/Match3AssetManager';
 import { DESIGN_HEIGHT, DESIGN_WIDTH, Match3System } from './systems/Match3System';
 import { LeaderboardEntry, SceneName, stateSync, useGameStore } from './store/useGameStore';
@@ -95,7 +95,7 @@ export function App() {
   const [activeModal, setActiveModal] = useState<'shop' | 'leaderboard' | 'settings' | null>(null);
 
   /**
-   * 通过 @wegame/hybrid-engine 的 HybridCanvasHost 引导挂载三消游戏系统
+   * 通过 alloy2d 的 HybridCanvasHost 引导挂载三消游戏系统
    */
   const handleBootstrap = useCallback((app: Application): HybridGameInstance => {
     assetManager.initBuiltInAtlas();
@@ -176,7 +176,7 @@ export function App() {
 
   return (
     <div className="hybrid-game-root">
-      {/* 1. 引入 @wegame/hybrid-engine 宿主画布组件 */}
+      {/* 1. 引入 alloy2d 宿主画布组件 */}
       <HybridCanvasHost
         designWidth={DESIGN_WIDTH}
         designHeight={DESIGN_HEIGHT}
@@ -204,7 +204,7 @@ export function App() {
 
       {scene === 'settlement' && <SettlementPanel />}
 
-      {/* 3. 引入 @wegame/hybrid-engine 实时遥测监控面板 */}
+      {/* 3. 引入 alloy2d 实时遥测监控面板 */}
       <EngineInspectorDock
         showInspector={showInspector}
         onToggleInspector={toggleInspector}
@@ -218,7 +218,7 @@ export function App() {
         eventLogs={eventLogs}
       />
 
-      {/* 4. 引入 @wegame/hybrid-engine 原生 <dialog> 模态弹窗组件 */}
+      {/* 4. 引入 alloy2d 原生 <dialog> 模态弹窗组件 */}
       <ModalDialog
         open={activeModal === 'shop'}
         onClose={() => setActiveModal(null)}

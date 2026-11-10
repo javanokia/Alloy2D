@@ -1,4 +1,4 @@
-import { gameEvents, platform } from '@wegame/hybrid-engine';
+import { gameEvents, platform } from 'alloy2d';
 import { useGameStore } from '../store/useGameStore';
 
 export function SettlementPanel() {

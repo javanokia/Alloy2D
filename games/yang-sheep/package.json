@@ -1,15 +1,16 @@
 {
-  "name": "@wegame/yang-sheep",
+  "name": "@alloy2d/yang-sheep",
   "private": true,
   "version": "1.0.0",
+  "description": "羊了个羊 - 基于 Alloy2D 混合引擎开发的多端小游戏工程",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:wx": "hybrid-engine export-wx"
+    "build:wx": "alloy2d export-wx"
   },
   "dependencies": {
-    "@wegame/hybrid-engine": "*",
+    "alloy2d": "*",
     "pixi.js": "^7.4.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

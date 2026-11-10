@@ -1,5 +1,5 @@
 import { BaseTexture, Rectangle, Texture } from 'pixi.js';
-import { BaseAssetManager, platform } from '@wegame/hybrid-engine';
+import { BaseAssetManager, platform } from 'alloy2d';
 
 export const TILE_TYPES_COUNT = 16;
 
@@ -52,7 +52,7 @@ function traceRoundedRect(
 
 /**
  * 《羊了个羊》专用资源与动态图集管理器
- * 继承自 @wegame/hybrid-engine 的 BaseAssetManager
+ * 继承自 alloy2d 的 BaseAssetManager
  */
 export class YangAssetManager extends BaseAssetManager {
   private atlasBaseTexture: BaseTexture | null = null;

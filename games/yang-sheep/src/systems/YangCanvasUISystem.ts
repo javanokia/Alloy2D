@@ -4,7 +4,7 @@ import {
   computeSafeAreaDesignOffsets,
   gameEvents,
   platform,
-} from '@wegame/hybrid-engine';
+} from 'alloy2d';
 import { ModalType, useYangStore } from '../store/useYangStore';
 import { DESIGN_HEIGHT, DESIGN_WIDTH } from './YangGameSystem';
 

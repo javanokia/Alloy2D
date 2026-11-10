@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { audioManager, DirtyStateSync, platform, SaveManager } from '@wegame/hybrid-engine';
+import { audioManager, DirtyStateSync, platform, SaveManager } from 'alloy2d';
 
 export type SceneName = 'menu' | 'game' | 'settlement';
 export type ModalType = 'shop' | 'leaderboard' | 'settings' | null;

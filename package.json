@@ -8,15 +8,15 @@
     "games/*"
   ],
   "scripts": {
-    "dev": "npm --workspace=@wegame/star-match3 run dev",
-    "dev:yang": "npm --workspace=@wegame/yang-sheep run dev",
-    "test": "npm --workspace=@wegame/hybrid-engine run test",
-    "test:watch": "npm --workspace=@wegame/hybrid-engine run test:watch",
-    "typecheck": "npm --workspace=@wegame/hybrid-engine run typecheck && tsc --noEmit -p games/star-match3 && tsc --noEmit -p games/yang-sheep",
-    "build:engine": "npm --workspace=@wegame/hybrid-engine run build",
-    "build:game": "npm --workspace=@wegame/star-match3 run build && npm --workspace=@wegame/yang-sheep run build",
-    "build:wx": "npm --workspace=@wegame/star-match3 run build:wx && npm --workspace=@wegame/yang-sheep run build:wx",
+    "dev": "npm --workspace=@alloy2d/star-match3 run dev",
+    "dev:yang": "npm --workspace=@alloy2d/yang-sheep run dev",
+    "test": "npm --workspace=alloy2d run test",
+    "test:watch": "npm --workspace=alloy2d run test:watch",
+    "typecheck": "npm --workspace=alloy2d run typecheck && tsc --noEmit -p games/star-match3 && tsc --noEmit -p games/yang-sheep",
+    "build:engine": "npm --workspace=alloy2d run build",
+    "build:game": "npm --workspace=@alloy2d/star-match3 run build && npm --workspace=@alloy2d/yang-sheep run build",
+    "build:wx": "npm --workspace=@alloy2d/star-match3 run build:wx && npm --workspace=@alloy2d/yang-sheep run build:wx",
     "build": "npm run build:engine && npm run build:game && npm run build:wx",
-    "create-game": "node packages/hybrid-engine/bin/cli.mjs create"
+    "create-game": "node packages/alloy2d/bin/cli.mjs create"
   }
 }

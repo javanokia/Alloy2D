@@ -1,14 +1,14 @@
 {
-  "name": "@wegame/hybrid-engine",
+  "name": "alloy2d",
   "version": "1.1.0",
-  "description": "Alloy2D 核心引擎库：React 18 + Pixi.js v7 多端混合架构小游戏引擎与工具套件",
+  "description": "Alloy2D: The Alloy of React & Pixi.js for Cross-Platform Mini-Games",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "@wegame/source": "./src/index.ts",
+      "@alloy2d/source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
@@ -21,6 +21,7 @@
     "!src/__tests__"
   ],
   "bin": {
+    "alloy2d": "./bin/cli.mjs",
     "hybrid-engine": "./bin/cli.mjs"
   },
   "scripts": {

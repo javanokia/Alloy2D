@@ -1,5 +1,5 @@
 {
-  "description": "@wegame/star-match3 - 基于 @wegame/hybrid-engine 构建的微信小游戏工程",
+  "description": "@alloy2d/star-match3 - 基于 alloy2d 构建的微信小游戏工程",
   "packOptions": {
     "ignore": [],
     "include": []

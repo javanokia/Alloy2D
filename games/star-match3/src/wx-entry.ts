@@ -1,5 +1,5 @@
 import { Container, Graphics, Sprite } from 'pixi.js';
-import { gameEvents, runWxGame, SceneManager } from '@wegame/hybrid-engine';
+import { gameEvents, runWxGame, SceneManager } from 'alloy2d';
 import { assetManager } from './assets/Match3AssetManager';
 import { SceneName, stateSync, useGameStore } from './store/useGameStore';
 import { DESIGN_HEIGHT, DESIGN_WIDTH, Match3System } from './systems/Match3System';

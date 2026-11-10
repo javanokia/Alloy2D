@@ -91,8 +91,8 @@ flowchart TD
 
 | 游戏工程 | 玩法类型 | 技术亮点 |
 | :--- | :--- | :--- |
-| **[星耀三消](games/star-match3)** (`@wegame/star-match3`) | 经典三消策略益智 | 8×8 动态掉落填充、特殊炸弹消除、连击特效、道具商城、实时排行榜 |
-| **[羊了个羊](games/yang-sheep)** (`@wegame/yang-sheep`) | 3D 层叠消除卡牌 | 复杂多层遮挡阴影计算、7 卡槽消除判定、移出/撤回/洗牌道具、过关结算 |
+| **[星耀三消](games/star-match3)** (`@alloy2d/star-match3`) | 经典三消策略益智 | 8×8 动态掉落填充、特殊炸弹消除、连击特效、道具商城、实时排行榜 |
+| **[羊了个羊](games/yang-sheep)** (`@alloy2d/yang-sheep`) | 3D 层叠消除卡牌 | 复杂多层遮挡阴影计算、7 卡槽消除判定、移出/撤回/洗牌道具、过关结算 |
 
 ---
 
@@ -172,7 +172,7 @@ npx hybrid-engine export-wx
 ```text
 Alloy2D/
 ├── packages/
-│   └── hybrid-engine/          # Alloy2D 核心引擎库 (@wegame/hybrid-engine)
+│   └── alloy2d/                # Alloy2D 核心引擎库 (`alloy2d`)
 │       ├── src/
 │       │   ├── audio/          # 跨端音频管理器与合成音 (AudioManager)
 │       │   ├── effects/        # 对象池与特效管理 (EffectManager)
@@ -184,22 +184,33 @@ Alloy2D/
 │       │   └── react/          # React Canvas 宿主与调试遥测 Dock 面板
 │       └── bin/cli.mjs         # 引擎脚手架 CLI (create / export-wx)
 ├── games/
-│   ├── star-match3/            # 落地实战 1：《星耀三消》双端游戏工程
-│   └── yang-sheep/             # 落地实战 2：《羊了个羊》双端游戏工程
-├── .github/workflows/ci.yml    # GitHub Actions 自动化 CI 流水线
+│   ├── star-match3/            # 落地实战 1：《星耀三消》双端游戏工程 (@alloy2d/star-match3)
+│   └── yang-sheep/             # 落地实战 2：《羊了个羊》双端游戏工程 (@alloy2d/yang-sheep)
+├── docs/
+│   └── architecture.md         # 混合架构深度白皮书与跨端技术复盘
+├── .github/                    # GitHub Actions CI 工作流与社区模版
 ├── LICENSE                     # MIT 开源协议
 └── package.json                # Monorepo 统一工作区配置
 ```
 
 ---
 
+## 📚 深度技术白皮书
+
+想深入了解 React 与 Pixi.js 是如何解决状态重渲染损耗、实现 60FPS 丝滑通信与微信环境无缝抹平的？请阅读：
+👉 **[React+Pixi.js 混合架构技术白皮书与跨端复盘](docs/architecture.md)**
+
+---
+
 ## 🤝 贡献指南 (Contributing)
 
-欢迎提交 Issue 和 Pull Request！
-1. Fork 本项目并创建特性分支 (`git checkout -b feature/AmazingFeature`)。
-2. 提交代码时请确保测试通过 (`npm test && npm run typecheck`)。
-3. 提交变更并推送至您的分支 (`git push origin feature/AmazingFeature`)。
-4. 发起 Pull Request。
+欢迎提交 Issue 和 Pull Request！详细规范请查阅 [CONTRIBUTING.md](CONTRIBUTING.md) 与 [Code of Conduct](CODE_OF_CONDUCT.md)。
+
+---
+
+## ⚠️ 素材声明与免责条款 (Assets Disclaimer)
+
+本项目**核心代码库与工程逻辑基于 MIT License 开源**。仓库内包含的音频片段（MP3）及游戏美术贴图（星耀三消宝石、羊了个羊卡牌等）仅用于**开源技术交流、学习与架构演示**。商业发布或二次上线前，请替换为您拥有完整商用版权的素材资源。
 
 ---
 

@@ -1,5 +1,5 @@
 import { Container, Graphics, Text, TextStyle } from 'pixi.js';
-import { gameEvents, platform } from '@wegame/hybrid-engine';
+import { gameEvents, platform } from 'alloy2d';
 import { yangAssetManager } from '../assets/YangAssetManager';
 import { CARD_HEIGHT, CARD_WIDTH, YangCard } from '../entities/YangCard';
 import { YangEffectManager } from '../entities/YangEffectManager';
@@ -19,7 +19,7 @@ interface MoveHistory {
 
 /**
  * 《羊了个羊》核心玩法与规则系统
- * 基于 @wegame/hybrid-engine 构建
+ * 基于 alloy2d 构建
  */
 export class YangGameSystem {
   public readonly rootContainer: Container;

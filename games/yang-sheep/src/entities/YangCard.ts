@@ -1,5 +1,5 @@
 import { Container, FederatedPointerEvent, Graphics, Sprite, Texture } from 'pixi.js';
-import { animateTo, animateTransform, Easing, gameEvents } from '@wegame/hybrid-engine';
+import { animateTo, animateTransform, Easing, gameEvents } from 'alloy2d';
 
 export const CARD_WIDTH = 68;
 export const CARD_HEIGHT = 82;

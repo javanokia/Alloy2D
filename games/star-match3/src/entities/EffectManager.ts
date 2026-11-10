@@ -1,4 +1,4 @@
-import { EffectManager as EngineEffectManager } from '@wegame/hybrid-engine';
+import { EffectManager as EngineEffectManager } from 'alloy2d';
 import { assetManager, TILE_THEMES } from '../assets/Match3AssetManager';
 
 /**

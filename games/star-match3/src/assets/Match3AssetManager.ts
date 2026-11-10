@@ -3,7 +3,7 @@ import {
   ATLAS_PADDING,
   BaseAssetManager,
   traceRoundedRect,
-} from '@wegame/hybrid-engine';
+} from 'alloy2d';
 
 export const TILE_TYPES_COUNT = 6;
 

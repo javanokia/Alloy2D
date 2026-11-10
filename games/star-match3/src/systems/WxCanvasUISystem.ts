@@ -6,7 +6,7 @@ import {
   Easing,
   gameEvents,
   platform,
-} from '@wegame/hybrid-engine';
+} from 'alloy2d';
 import { LeaderboardEntry, ModalType, useGameStore } from '../store/useGameStore';
 import { DESIGN_HEIGHT, DESIGN_WIDTH } from './Match3System';
 
@@ -140,7 +140,7 @@ export class WxCanvasUISystem {
     card.addChild(cardBg);
 
     const badge = new Text(
-      'Powered by @wegame/hybrid-engine SDK',
+      'Powered by alloy2d SDK',
       new TextStyle({
         fontFamily: 'sans-serif',
         fontSize: 19,

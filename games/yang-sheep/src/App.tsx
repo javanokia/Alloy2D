@@ -7,7 +7,7 @@ import {
   HybridGameInstance,
   SceneManager,
   tweenManager,
-} from '@wegame/hybrid-engine';
+} from 'alloy2d';
 import { yangAssetManager } from './assets/YangAssetManager';
 import {
   playYangBgm,

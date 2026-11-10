@@ -1,5 +1,5 @@
 import { Container, Graphics, Sprite } from 'pixi.js';
-import { gameEvents, platform } from '@wegame/hybrid-engine';
+import { gameEvents, platform } from 'alloy2d';
 import { assetManager, TILE_TYPES_COUNT } from '../assets/Match3AssetManager';
 import { EffectManager } from '../entities/EffectManager';
 import { BOARD_COLS, BOARD_ROWS, Tile, TILE_SIZE } from '../entities/Tile';

@@ -145,6 +145,6 @@ export async function bootstrapWxGame(options: WxBootstrapOptions): Promise<WxGa
 /** 启动并在失败时输出错误，适合直接作为 wx-entry 的顶层调用 */
 export function runWxGame(options: WxBootstrapOptions): void {
   bootstrapWxGame(options).catch((err) => {
-    console.error('[@wegame/hybrid-engine] 微信小游戏启动失败:', err);
+    console.error('[alloy2d] 微信小游戏启动失败:', err);
   });
 }

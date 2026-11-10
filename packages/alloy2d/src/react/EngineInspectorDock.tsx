@@ -61,7 +61,7 @@ export function EngineInspectorDock({
   return (
     <aside className="engine-inspector-dock" aria-label="引擎架构实时遥测面板">
       <div className="inspector-header">
-        <span className="inspector-title">⚡ @wegame/hybrid-engine 遥测</span>
+        <span className="inspector-title">⚡ alloy2d 遥测</span>
         <button
           type="button"
           className="inspector-close"

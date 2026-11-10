@@ -7,7 +7,7 @@ import {
   LifecycleState,
   platform,
   SaveManager,
-} from '@wegame/hybrid-engine';
+} from 'alloy2d';
 
 export type SceneName = 'loading' | 'menu' | 'game' | 'settlement';
 export type ModalType = 'shop' | 'leaderboard' | 'settings' | null;

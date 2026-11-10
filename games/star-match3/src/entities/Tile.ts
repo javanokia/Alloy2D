@@ -4,7 +4,7 @@ import {
   animateTransform,
   Easing,
   gameEvents,
-} from '@wegame/hybrid-engine';
+} from 'alloy2d';
 
 export const TILE_SIZE = 80;
 export const BOARD_COLS = 8;

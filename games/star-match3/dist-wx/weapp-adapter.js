@@ -1,5 +1,5 @@
 /**
- * 微信小游戏环境适配层 (weapp-adapter.js) - 由 @wegame/hybrid-engine 自动生成
+ * 微信小游戏环境适配层 (weapp-adapter.js) - 由 alloy2d 自动生成
  * 抹平 window/document API、Canvas/Image 实例创建、前后台切换及触摸事件向 Pixi v7 PointerEvent 的映射
  */
 (function () {

@@ -1,4 +1,4 @@
-import { gameEvents, platform } from '@wegame/hybrid-engine';
+import { gameEvents, platform } from 'alloy2d';
 import { useGameStore } from '../store/useGameStore';
 
 interface StartPanelProps {
@@ -26,14 +26,14 @@ export function StartPanel({
     <div className="overlay-screen start-panel">
       <div className="start-card">
         <div className="badge-row">
-          <span className="arch-badge">@wegame/hybrid-engine</span>
+          <span className="arch-badge">alloy2d</span>
           <span className="arch-badge pixi">Pixi.js v7 WebGL</span>
           <span className="arch-badge zustand">Zustand + DirtyFlags</span>
         </div>
 
         <h1 className="game-logo">星耀三消 · 混合引擎</h1>
         <p className="game-subtitle">
-          通过依赖包 <code>@wegame/hybrid-engine</code> 驱动游戏工程与多端小游戏构建
+          通过依赖包 <code>alloy2d</code> 驱动游戏工程与多端小游戏构建
         </p>
 
         <div className="stats-summary-grid">

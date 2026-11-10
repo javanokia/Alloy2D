@@ -8,7 +8,7 @@ const command = args[0] || 'help';
 
 function generateWeappAdapterCode() {
   return `/**
- * 微信小游戏环境适配层 (weapp-adapter.js) - 由 @wegame/hybrid-engine 自动生成
+ * 微信小游戏环境适配层 (weapp-adapter.js) - 由 alloy2d 自动生成
  * 抹平 window/document API、Canvas/Image 实例创建、前后台切换及触摸事件向 Pixi v7 PointerEvent 的映射
  */
 (function () {
@@ -317,7 +317,7 @@ function ensureEngineBuilt() {
 
   const stale = !fs.existsSync(distEntry) || fs.statSync(distEntry).mtimeMs < latestMtime(srcDir);
   if (stale) {
-    console.log('🔧 [@wegame/hybrid-engine] [0/4] 引擎 dist 缺失或已过期，正在重新构建引擎...');
+    console.log('🔧 [alloy2d] [0/4] 引擎 dist 缺失或已过期，正在重新构建引擎...');
     execSync('npm run build', { stdio: 'inherit', cwd: engineDir });
   }
 }
@@ -331,13 +331,13 @@ function runExportWx() {
     ? JSON.parse(fs.readFileSync(pkgPath, 'utf-8'))
     : { name: 'hybrid-minigame' };
 
-  console.log(`🚀 [@wegame/hybrid-engine] [1/4] 正在编译游戏工程 (${pkg.name}) 的微信小游戏包...`);
+  console.log(`🚀 [alloy2d] [1/4] 正在编译游戏工程 (${pkg.name}) 的微信小游戏包...`);
   execSync('npx vite build --config vite.wx.config.ts', { stdio: 'inherit', cwd: projectDir });
 
-  console.log('🛠 [@wegame/hybrid-engine] [2/4] 正在生成 weapp-adapter.js...');
+  console.log('🛠 [alloy2d] [2/4] 正在生成 weapp-adapter.js...');
   fs.writeFileSync(path.join(outDir, 'weapp-adapter.js'), generateWeappAdapterCode(), 'utf-8');
 
-  console.log('📦 [@wegame/hybrid-engine] [3/4] 正在生成 game.js、game.json 与 project.config.json...');
+  console.log('📦 [alloy2d] [3/4] 正在生成 game.js、game.json 与 project.config.json...');
   fs.writeFileSync(
     path.join(outDir, 'game.js'),
     `require('./weapp-adapter.js');\nrequire('./engine-bundle.js');\n`,
@@ -357,7 +357,7 @@ function runExportWx() {
   fs.writeFileSync(path.join(outDir, 'game.json'), JSON.stringify(gameJson, null, 2), 'utf-8');
 
   const projectConfigJson = {
-    description: `${pkg.name} - 基于 @wegame/hybrid-engine 构建的微信小游戏工程`,
+    description: `${pkg.name} - 基于 alloy2d 构建的微信小游戏工程`,
     packOptions: { ignore: [], include: [] },
     setting: {
       urlCheck: false,
@@ -429,7 +429,7 @@ function runExportWx() {
   }
 
   const totalBytes = getDirSizeBytes(outDir);
-  console.log('\n📊 [@wegame/hybrid-engine] [4/4] 微信小游戏导出清单 (dist-wx/):');
+  console.log('\n📊 [alloy2d] [4/4] 微信小游戏导出清单 (dist-wx/):');
   for (const file of fs.readdirSync(outDir)) {
     const fullPath = path.join(outDir, file);
     const stat = fs.statSync(fullPath);
@@ -443,7 +443,7 @@ function runExportWx() {
 
 function runCreateGame(gameName) {
   if (!gameName) {
-    console.error('❌ 请提供新游戏工程名称，例如: npx hybrid-engine create my-new-game');
+    console.error('❌ 请提供新游戏工程名称，例如: npx alloy2d create my-new-game');
     process.exit(1);
   }
   const targetDir = path.resolve(process.cwd(), 'games', gameName);
@@ -455,17 +455,17 @@ function runCreateGame(gameName) {
   fs.mkdirSync(path.join(targetDir, 'src'), { recursive: true });
 
   const pkgJson = {
-    name: `@wegame/${gameName}`,
+    name: `@alloy2d/${gameName}`,
     private: true,
     version: '1.0.0',
     type: 'module',
     scripts: {
       dev: 'vite',
       build: 'tsc -b && vite build',
-      'build:wx': 'hybrid-engine export-wx',
+      'build:wx': 'alloy2d export-wx',
     },
     dependencies: {
-      '@wegame/hybrid-engine': '*',
+      'alloy2d': '*',
       'pixi.js': '^7.4.2',
       react: '^18.3.1',
       'react-dom': '^18.3.1',
@@ -496,7 +496,7 @@ function runCreateGame(gameName) {
   );
   fs.writeFileSync(
     path.join(targetDir, 'index.html'),
-    `<!doctype html>\n<html lang="zh-CN">\n  <head>\n    <meta charset="UTF-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>${gameName} - Powered by @wegame/hybrid-engine</title>\n  </head>\n  <body>\n    <div id="root"></div>\n    <script type="module" src="/src/main.tsx"></script>\n  </body>\n</html>\n`,
+    `<!doctype html>\n<html lang="zh-CN">\n  <head>\n    <meta charset="UTF-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <title>${gameName} - Powered by alloy2d</title>\n  </head>\n  <body>\n    <div id="root"></div>\n    <script type="module" src="/src/main.tsx"></script>\n  </body>\n</html>\n`,
     'utf-8'
   );
 
@@ -509,7 +509,7 @@ export default defineConfig(({ command }) => ({
   plugins: [react()],
   resolve:
     command === 'serve'
-      ? { conditions: ['@wegame/source', ...defaultClientConditions] }
+      ? { conditions: ['@alloy2d/source', ...defaultClientConditions] }
       : undefined,
   define: {
     __PLATFORM__: JSON.stringify(process.env.CROSS_PLATFORM || 'web'),
@@ -562,7 +562,7 @@ export default defineConfig({
   fs.writeFileSync(
     path.join(targetDir, 'src', 'wx-entry.ts'),
     `import { Container } from 'pixi.js';
-import { runWxGame, SceneManager } from '@wegame/hybrid-engine';
+import { runWxGame, SceneManager } from 'alloy2d';
 
 runWxGame({
   designWidth: 750,
@@ -583,7 +583,7 @@ runWxGame({
     'utf-8'
   );
 
-  console.log(`✅ 已成功基于 @wegame/hybrid-engine 创建新游戏工程骨架: ${targetDir}`);
+  console.log(`✅ 已成功基于 alloy2d 创建新游戏工程骨架: ${targetDir}`);
 }
 
 if (command === 'export-wx') {
@@ -592,9 +592,9 @@ if (command === 'export-wx') {
   runCreateGame(args[1]);
 } else {
   console.log(`
-@wegame/hybrid-engine CLI 工具
+alloy2d CLI 工具
 用法:
-  hybrid-engine export-wx          将当前游戏工程编译并导出为微信小游戏工程 (dist-wx/)
-  hybrid-engine create <game-name> 在 games/<game-name> 下基于引擎脚手架初始化新游戏工程
+  alloy2d export-wx          将当前游戏工程编译并导出为微信小游戏工程 (dist-wx/)
+  alloy2d create <game-name> 在 games/<game-name> 下基于引擎脚手架初始化新游戏工程
 `);
 }

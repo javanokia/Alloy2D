@@ -1,5 +1,5 @@
 import { Container } from 'pixi.js';
-import { gameEvents, runWxGame, SceneManager } from '@wegame/hybrid-engine';
+import { gameEvents, runWxGame, SceneManager } from 'alloy2d';
 import { yangAssetManager } from './assets/YangAssetManager';
 import { playYangBgm, SceneName, useYangStore, yangStateSync } from './store/useYangStore';
 import { YangCanvasUISystem } from './systems/YangCanvasUISystem';

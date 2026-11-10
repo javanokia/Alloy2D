@@ -1,4 +1,4 @@
-import { EffectManager } from '@wegame/hybrid-engine';
+import { EffectManager } from 'alloy2d';
 import { TILE_THEMES, yangAssetManager } from '../assets/YangAssetManager';
 
 /**

@@ -15,7 +15,7 @@ First off, thank you for considering contributing to **Alloy2D**! It's people li
 1. **Fork the repository** on GitHub.
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/<your-username>/Alloy2D.git
+   git clone https://github.com/javanokia/Alloy2D.git
    cd Alloy2D
    ```
 3. **Install dependencies**:

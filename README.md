@@ -104,7 +104,7 @@ flowchart TD
 
 ### 2. 克隆与安装依赖
 ```bash
-git clone https://github.com/<your-username>/Alloy2D.git
+git clone https://github.com/javanokia/Alloy2D.git
 cd Alloy2D
 npm install
 ```
